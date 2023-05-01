@@ -1,0 +1,8 @@
+cmake_variables.py
+python/__pycache__/
+python/pylocogym/__pycache__/
+python/pylocogym/envs/__pycache__/
+python/pylocogym/envs/rewards/__pycache__/
+python/pylocogym/envs/rewards/dog/__pycache__/
+python/pylocogym/envs/rewards/bob/__pycache__/
+python/pylocogym/envs/rewards/utils/__pycache__/
