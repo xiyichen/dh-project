@@ -1,1 +1,0 @@
-/local/home/xiychen/Documents/dh-project/src/python/pylocogym/envs/rewards/bob/humanoid_reward.py
