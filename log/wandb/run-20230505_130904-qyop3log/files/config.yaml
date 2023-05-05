@@ -1,0 +1,91 @@
+wandb_version: 1
+
+env_id:
+  desc: null
+  value: PylocoVanilla-v0
+train_hyp_params:
+  desc: null
+  value:
+    learning_rate: 0.0003
+    batch_size: 512
+    n_epochs: 10
+    num_envs: 16
+    n_steps: 2048
+    vf_coef: 0.5
+    time_steps: 50000000.0
+    save_freq: 100000.0
+    max_episode_steps: 200
+    max_evaluation_steps: 500
+    seed: 313
+    normalize_observation: false
+    normalize_reward: false
+environment_params:
+  desc: null
+  value:
+    robot_model: Bob
+    control_rate: 60.0
+    simulation_rate: 120.0
+    motors_kp: 300.0
+    motors_kd: 50.0
+    max_torque: 50.0
+    is_obs_fullstate: false
+    use_random_command: false
+reward_params:
+  desc: null
+  value:
+    fwd_vel_cmd: 0.0
+    weight_velocity: 0.01
+    sigma_velocity: 0.5
+    weight_height: 0.5
+    sigma_height: 0.1
+    weight_attitude: 0.5
+    sigma_attitude: 0.2
+    weight_torque: 0.01
+    sigma_torque: 5.0
+    weight_smoothness1: 0.01
+    sigma_smoothness1: 2.0
+    weight_smoothness2: 0.01
+    sigma_smoothness2: 1.0
+    weight_smoothness: 0.5
+    weight_joints: 0.01
+    sigma_joints: 0.2
+    weight_early_penalty: 0.0
+    reward_file_path: src/python/pylocogym/envs/rewards/./bob/humanoid_reward.py
+model_params:
+  desc: null
+  value:
+    log_std_init: -1.0
+    activation_fn: ReLu
+    network_architecture:
+      pi:
+      - 256
+      - 256
+      vf:
+      - 256
+      - 256
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.2
+    cli_version: 0.15.1
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1683284944.174335
+    t:
+      1:
+      - 1
+      - 55
+      2:
+      - 1
+      - 55
+      3:
+      - 3
+      - 13
+      - 16
+      - 23
+      - 35
+      4: 3.9.2
+      5: 0.15.1
+      8:
+      - 5

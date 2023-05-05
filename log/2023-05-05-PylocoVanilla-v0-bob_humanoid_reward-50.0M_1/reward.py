@@ -14,8 +14,6 @@ def squared_norm(v):
         res += e**2
     return res
 
-
-
 def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_torques, action_buffer, is_obs_fullstate,
                    joint_angles_default, nominal_base_height):
     """
