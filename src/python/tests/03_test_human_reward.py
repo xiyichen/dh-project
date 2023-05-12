@@ -21,7 +21,6 @@ r, info = reward.compute_reward(test_data['observation_raw'],
                                 test_data['joint_angles_default'],
                                 test_data['nominal_base_height'])
 
-
 def test_forward_vel_reward():
     reward_term = 'forward_vel_reward'
     print("")
@@ -87,3 +86,5 @@ def test_reward():
     print("Your reward: ", r)
     print("Test reward: ", test_data['reward'])
     assert r == pytest.approx(test_data['reward'])
+
+load_target_motion()

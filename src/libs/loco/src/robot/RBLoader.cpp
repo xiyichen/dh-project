@@ -69,8 +69,9 @@ void RBLoader::populateRobot(Robot &robot) {
     }
 
     // index the jointList properly...
-    for (uint i = 0; i < robot.jointList.size(); i++)
+    for (uint i = 0; i < robot.jointList.size(); i++) {
         robot.jointList[i]->jIndex = i;
+    }
 
     // fix link states
     // this is necessary for the case that joints are created from random orders

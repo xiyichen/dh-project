@@ -9,6 +9,8 @@ import scripts
 from pylocogym.cmake_variables import *
 
 
+
+
 if __name__ == "__main__":
     # example of python script for training and testing
     parser = argparse.ArgumentParser(description='Process input arguments.')
@@ -64,3 +66,4 @@ if __name__ == "__main__":
             config_path=config_path,
             reward_path=args.rewardFile
         )
+

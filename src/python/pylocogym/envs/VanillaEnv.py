@@ -5,6 +5,10 @@ from importlib.machinery import SourceFileLoader
 
 from .PylocoEnv import PylocoEnv
 from ..cmake_variables import PYLOCO_LIB_PATH
+import os
+from scipy.spatial.transform import Rotation
+import json
+import numpy as np
 
 # importing pyloco
 spec = importlib.util.spec_from_file_location("pyloco", PYLOCO_LIB_PATH)
@@ -12,10 +16,50 @@ pyloco = importlib.util.module_from_spec(spec)
 sys.modules["module.name"] = pyloco
 spec.loader.exec_module(pyloco)
 
+def quat_to_euler(quat):
+    rot = Rotation.from_quat(quat)
+    rot_euler = rot.as_euler('xyz', degrees=True)
+    return rot_euler
+
+def load_target_motion(motion_clip='run', data_path='/local/home/xiychen/Documents/dh-project/data/robots/motions'):
+    fn = os.path.join(data_path, 'humanoid3d_{}.txt'.format(motion_clip))
+    dict = json.load(open(fn))
+    frames = dict['Frames']
+    d = {}
+    for idx, frame in enumerate(frames):
+        if idx not in d:
+            d[idx] = {}
+        d[idx]['duration'] = np.array(frame[:1])
+        d[idx]['root_pos'] = np.array(frame[1:4])
+        # d[idx]['root_rot'] = quat_to_euler(frame[4:8])
+        d[idx]['root_rot'] = frame[4:8]
+        # d[idx]['chest_rot'] = quat_to_euler(frame[8:12])
+        # d[idx]['neck_rot'] = quat_to_euler(frame[12:16])
+        # d[idx]['rhip_rot'] = quat_to_euler(frame[16:20])
+        d[idx]['chest_rot'] = frame[8:12]
+        d[idx]['neck_rot'] = frame[12:16]
+        d[idx]['rhip_rot'] =frame[16:20]
+        d[idx]['rknee_rot'] = np.array(frame[20:21])
+        # d[idx]['rankle_rot'] = quat_to_euler(frame[21:25])
+        # d[idx]['rshoulder_rot'] = quat_to_euler(frame[25:29])
+        d[idx]['rankle_rot'] = frame[21:25]
+        d[idx]['rshoulder_rot'] = frame[25:29]
+        d[idx]['relbow_rot'] = np.array(frame[29:30])
+        # d[idx]['lhip_rot'] = quat_to_euler(frame[30:34])
+        d[idx]['lhip_rot'] = frame[30:34]
+        d[idx]['lknee_rot'] = np.array(frame[34:35])
+        # d[idx]['lankle_rot'] = quat_to_euler(frame[35:39])
+        # d[idx]['lshoulder_rot'] = quat_to_euler(frame[39:43])
+        d[idx]['lankle_rot'] = frame[35:39]
+        d[idx]['lshoulder_rot'] = frame[39:43]
+        d[idx]['lelbow_rot'] = np.array(frame[43:44])
+    # print(d)
+    return d
+
 
 class VanillaEnv(PylocoEnv):
 
-    def __init__(self, max_episode_steps, env_params, reward_params):
+    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='run'):
         sim_dt = 1.0 / env_params['simulation_rate']
         con_dt = 1.0 / env_params['control_rate']
 
@@ -34,6 +78,8 @@ class VanillaEnv(PylocoEnv):
         self.box_throwing_interval = 100
         self.box_throwing_strength = 2
         self.box_throwing_counter = 0
+        self.target_motion = load_target_motion(motion_clip)
+        self.loop_motion = not ('getup' in motion_clip or 'kick' in motion_clip or 'punch' in motion_clip)
 
         if "reward_file_path" in reward_params.keys():
             reward_file_path = reward_params["reward_file_path"]
@@ -65,7 +111,12 @@ class VanillaEnv(PylocoEnv):
         info = {"msg": "===Episode Reset Done!===\n"}
         return (observation, info) if return_info else observation
 
-    def step(self, action: [np.ndarray]):
+    def step(self, action):
+        # action = data['clipped_actions']
+        # i = data['i']
+        # print('data is', action)
+        # # print(data)
+        # exit()
 
         # throw box if needed
         if self.enable_box_throwing and self.current_step % self.box_throwing_interval == 0:
@@ -88,7 +139,7 @@ class VanillaEnv(PylocoEnv):
                                                                self.reward_params, self.get_feet_status(),
                                                                self._sim.get_all_motor_torques(), self.action_buffer,
                                                                self.is_obs_fullstate, self.joint_angle_default,
-                                                               self._sim.nominal_base_height)
+                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion)
 
         self.sum_episode_reward_terms = {key: self.sum_episode_reward_terms.get(key, 0) + reward_info.get(key, 0) for
                                          key in reward_info.keys()}

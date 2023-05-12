@@ -231,7 +231,8 @@ class PylocoEnv(gym.Env):
             self.joint_angle_limit_high)
         # return action * self.joint_scale_factors + (self.joint_angle_limit_low + self.joint_angle_limit_high) / 2
 
-
+    def step_with_time_index(self, action, i):
+        pass
 
     def get_feet_status(self):
         status = FeetStatus()
