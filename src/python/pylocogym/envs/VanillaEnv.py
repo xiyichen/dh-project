@@ -32,26 +32,26 @@ def load_target_motion(motion_clip='run', data_path='/local/home/xiychen/Documen
         d[idx]['duration'] = np.array(frame[:1])
         d[idx]['root_pos'] = np.array(frame[1:4])
         # d[idx]['root_rot'] = quat_to_euler(frame[4:8])
-        d[idx]['root_rot'] = frame[4:8]
+        d[idx]['root_rot'] = np.array(frame[4:8])
         # d[idx]['chest_rot'] = quat_to_euler(frame[8:12])
         # d[idx]['neck_rot'] = quat_to_euler(frame[12:16])
         # d[idx]['rhip_rot'] = quat_to_euler(frame[16:20])
-        d[idx]['chest_rot'] = frame[8:12]
-        d[idx]['neck_rot'] = frame[12:16]
-        d[idx]['rhip_rot'] =frame[16:20]
-        d[idx]['rknee_rot'] = np.array(frame[20:21])
+        d[idx]['chest_rot'] = np.array(frame[8:12])
+        d[idx]['neck_rot'] = np.array(frame[12:16])
+        d[idx]['rhip_rot'] = np.array(frame[16:20])
+        d[idx]['rknee_rot'] = np.array(np.array(frame[20:21]))
         # d[idx]['rankle_rot'] = quat_to_euler(frame[21:25])
         # d[idx]['rshoulder_rot'] = quat_to_euler(frame[25:29])
-        d[idx]['rankle_rot'] = frame[21:25]
-        d[idx]['rshoulder_rot'] = frame[25:29]
+        d[idx]['rankle_rot'] = np.array(frame[21:25])
+        d[idx]['rshoulder_rot'] = np.array(frame[25:29])
         d[idx]['relbow_rot'] = np.array(frame[29:30])
         # d[idx]['lhip_rot'] = quat_to_euler(frame[30:34])
-        d[idx]['lhip_rot'] = frame[30:34]
+        d[idx]['lhip_rot'] = np.array(frame[30:34])
         d[idx]['lknee_rot'] = np.array(frame[34:35])
         # d[idx]['lankle_rot'] = quat_to_euler(frame[35:39])
         # d[idx]['lshoulder_rot'] = quat_to_euler(frame[39:43])
-        d[idx]['lankle_rot'] = frame[35:39]
-        d[idx]['lshoulder_rot'] = frame[39:43]
+        d[idx]['lankle_rot'] = np.array(frame[35:39])
+        d[idx]['lshoulder_rot'] = np.array(frame[39:43])
         d[idx]['lelbow_rot'] = np.array(frame[43:44])
     # print(d)
     return d

@@ -10,7 +10,7 @@
     "time_steps": 50e6,
     "save_freq": 1e5,
     "max_episode_steps": 200,
-    "max_evaluation_steps": 500,
+    "max_evaluation_steps": 100,
     "seed": 313,
     "normalize_observation": false,
     "normalize_reward": false
@@ -22,7 +22,7 @@
     "motors_kp": 300.0,
     "motors_kd": 50.0,
     "max_torque": 50.0,
-    "is_obs_fullstate": false,
+    "is_obs_fullstate": true,
     "use_random_command": false
   },
   "reward_params": {
@@ -30,10 +30,10 @@
     "weight_velocity": 1.0e-2,
     "sigma_velocity": 0.5,
 
-    "weight_height": 0.5,
+    "weight_height": 0.1,
     "sigma_height": 0.1,
 
-    "weight_attitude": 0.5,
+    "weight_attitude": 0.1,
     "sigma_attitude": 0.2,
 
     "weight_torque": 1.0e-2,
