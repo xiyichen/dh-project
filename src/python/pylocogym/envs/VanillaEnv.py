@@ -57,7 +57,7 @@ def load_target_motion(motion_clip='run', data_path='/local/home/xiychen/Documen
 
 class VanillaEnv(PylocoEnv):
 
-    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='cartwheel'):
+    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='run'):
         sim_dt = 1.0 / env_params['simulation_rate']
         con_dt = 1.0 / env_params['control_rate']
 
@@ -100,49 +100,44 @@ class VanillaEnv(PylocoEnv):
         # super().reset(seed=seed)  # We need this line to seed self.np_random
         self.current_step = 0
         self.box_throwing_counter = 0
-        # q_init = np.zeros((50,))
-        
-        # qdot_init = np.zeros((50,))
-        # self._sim.reset(q_init, qdot_init)
         
         self._sim.reset()
         observation = self.get_obs(0)
         q_init = observation[:50]
         qdot_init = observation[50:]
-        frame_idx = 87
+        frame_idx = 0
         q_init[0] = self.target_motion[frame_idx]['root_pos'][2]
         q_init[1] = self.target_motion[frame_idx]['root_pos'][1]
         q_init[2] = self.target_motion[frame_idx]['root_pos'][0]
         
-        root_euler = quaternion_to_euler(self.target_motion[frame_idx]['root_rot'], order='yzx')
-        root_euler[1] *= -1
+        root_euler = quaternion_to_euler(self.target_motion[frame_idx]['root_rot'], order='yzx', flip_z=True)
+        # root_euler[1] *= -1
         q_init[3:6] = root_euler
-        chest_euler = quaternion_to_euler(self.target_motion[frame_idx]['chest_rot'], order='zyx')
-        chest_euler[0] *= -1
+        chest_euler = quaternion_to_euler(self.target_motion[frame_idx]['chest_rot'], order='zyx', flip_z=True)
+        # chest_euler[0] *= -1
         q_init[[6+x for x in rot_mappings['chest_rot']]] = chest_euler
         
-        neck_euler = quaternion_to_euler(self.target_motion[frame_idx]['neck_rot'], order='zyx')
-        neck_euler[0] *= -1
+        neck_euler = quaternion_to_euler(self.target_motion[frame_idx]['neck_rot'], order='zyx', flip_z=True)
+        # neck_euler[0] *= -1
         q_init[[6+x for x in rot_mappings['neck_rot']]] = neck_euler
         
-        
-        rhip_euler = quaternion_to_euler(self.target_motion[frame_idx]['rhip_rot'], order='zxy')
-        rhip_euler[0] *= -1
+        rhip_euler = quaternion_to_euler(self.target_motion[frame_idx]['rhip_rot'], order='zxy', flip_z=True)
+        # rhip_euler[0] *= -1
         q_init[[6+x for x in rot_mappings['rhip_rot']]] = rhip_euler
         q_init[[6+x for x in rot_mappings['rknee_rot']]] = -self.target_motion[0]['rknee_rot']
         q_init[[6+x for x in rot_mappings['relbow_rot']]] = -self.target_motion[0]['relbow_rot']
-        lhip_euler = quaternion_to_euler(self.target_motion[frame_idx]['lhip_rot'], order='zxy')
-        lhip_euler[0] *= -1
+        lhip_euler = quaternion_to_euler(self.target_motion[frame_idx]['lhip_rot'], order='zxy', flip_z=True)
+        # lhip_euler[0] *= -1
         q_init[[6+x for x in rot_mappings['lhip_rot']]] = lhip_euler
         q_init[[6+x for x in rot_mappings['lknee_rot']]] = -self.target_motion[0]['lknee_rot']
         q_init[[6+x for x in rot_mappings['lelbow_rot']]] = -self.target_motion[0]['lelbow_rot']
-        q_init[[6+x for x in rot_mappings['lankle_rot']]] = quaternion_to_euler(self.target_motion[frame_idx]['lankle_rot'], order='yxz')[:2]
-        q_init[[6+x for x in rot_mappings['rankle_rot']]] = quaternion_to_euler(self.target_motion[frame_idx]['rankle_rot'], order='yxz')[:2]
-        rshoulder_euler = quaternion_to_euler(self.target_motion[frame_idx]['rshoulder_rot'], order='zxy')
-        rshoulder_euler[0] *= -1
+        q_init[[6+x for x in rot_mappings['lankle_rot']]] = quaternion_to_euler(self.target_motion[frame_idx]['lankle_rot'], order='yxz', flip_z=False)[:2]
+        q_init[[6+x for x in rot_mappings['rankle_rot']]] = quaternion_to_euler(self.target_motion[frame_idx]['rankle_rot'], order='yxz', flip_z=False)[:2]
+        rshoulder_euler = quaternion_to_euler(self.target_motion[frame_idx]['rshoulder_rot'], order='zxy', flip_z=True)
+        # rshoulder_euler[0] *= -1
         q_init[[6+x for x in rot_mappings['rshoulder_rot']]] = rshoulder_euler
-        lshoulder_euler = quaternion_to_euler(self.target_motion[frame_idx]['lshoulder_rot'], order='zxy')
-        lshoulder_euler[0] *= -1
+        lshoulder_euler = quaternion_to_euler(self.target_motion[frame_idx]['lshoulder_rot'], order='zxy', flip_z=True)
+        # lshoulder_euler[0] *= -1
         q_init[[6+x for x in rot_mappings['lshoulder_rot']]] = lshoulder_euler
         
         self._sim.reset(q_init, qdot_init)
@@ -155,21 +150,19 @@ class VanillaEnv(PylocoEnv):
     
     def get_phase(self):
         elapsed_time = self.cnt_timestep_size*self.current_step
-        phase = elapsed_time / (self.target_motion[0]['duration'][0] * len(self.target_motion.keys()))
-        # check if it's a loop motion
-        if phase > 1:
-            if self.loop_motion:
-                phase -= math.floor(phase)
-            else:
-                phase = 1
-        return phase
+        num_loops_passed = elapsed_time / (self.target_motion[0]['duration'][0] * len(self.target_motion.keys()))
+        
+        # e.g.: 25.6 -> 0.6
+        phase = num_loops_passed - math.floor(num_loops_passed)
+        num_loops_passed = math.floor(num_loops_passed)
+        
+        if num_loops_passed >= 1 and not self.loop_motion:
+            num_loops_passed = 0
+            phase = 1
+        
+        return phase, num_loops_passed
 
     def step(self, action):
-        # action = data['clipped_actions']
-        # i = data['i']
-        # print('data is', action)
-        # # print(data)
-        # exit()
 
         # throw box if needed
         if self.enable_box_throwing and self.current_step % self.box_throwing_interval == 0:
@@ -185,7 +178,7 @@ class VanillaEnv(PylocoEnv):
         self.current_step += 1
         
         
-        phase = self.get_phase()
+        phase, num_loops_passed = self.get_phase()
         
         observation = self.get_obs(phase)
         self.action_buffer = np.roll(self.action_buffer, self.num_joints)  # moving action buffer
@@ -196,7 +189,7 @@ class VanillaEnv(PylocoEnv):
                                                                self.reward_params, self.get_feet_status(),
                                                                self._sim.get_all_motor_torques(), self.action_buffer,
                                                                self.is_obs_fullstate, self.joint_angle_default,
-                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, phase)
+                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, phase, num_loops_passed)
 
         self.sum_episode_reward_terms = {key: self.sum_episode_reward_terms.get(key, 0) + reward_info.get(key, 0) for
                                          key in reward_info.keys()}
