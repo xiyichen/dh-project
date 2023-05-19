@@ -4,110 +4,11 @@ Computing reward for Vanilla setup, constant target speed, gaussian kernels
 import numpy as np
 from numpy.linalg import norm
 from pylocogym.envs.rewards.utils.utils import *
+from pylocogym.envs.rewards.utils.mappings import *
 
 import pickle
 import time
 import math
-
-
-
-def squared_norm(v):
-    res = 0
-    for e in v:
-        res += e**2
-    return res
-
-def get_phase(dt, i, duration, num_frames, loop_motion):
-    elapsed_time = dt*i
-    phase = elapsed_time / (duration * num_frames)
-    # check if it's a loop motion
-    if phase > 1:
-        if loop_motion:
-            phase -= math.floor(phase)
-        else:
-            phase = 1
-    return phase
-
-def quaternion_to_euler(quat, order='xyz'):
-    r = Rotation.from_quat(quat)
-    return r.as_euler(order, degrees=False)
-
-def euler_to_quaternion(euler, order='xyz'):
-    r = Rotation.from_euler(order, euler, degrees=False)
-    return r.as_quat()
-
-joint_mappings = {'lowerback_x': 0,
-                  'lHip_1': 1,
-                  'rHip_1': 2,
-                  'lowerback_y': 3,
-                  'lHip_2': 4,
-                  'rHip_2': 5,
-                  'lowerback_z': 6,
-                  'lHip_torsion': 7,
-                  'rHip_torsion': 8,
-                  'upperback_x': 9,
-                  'lKnee': 10,
-                  'rKnee': 11,
-                  'upperback_y': 12,
-                  'lAnkle_1': 13,
-                  'rAnkle_1': 14,
-                  'upperback_z': 15,
-                  'lAnkle_2': 16,
-                  'rAnkle_2': 17,
-                  'lowerneck_x': 18,
-                  'lScapula_y': 19,
-                  'rScapula_y': 20,
-                  'lToeJoint': 21,
-                  'rToeJoint': 22,
-                  'lowerneck_y': 23,
-                  'lScapula_z': 24,
-                  'rScapula_z': 25,
-                  'lowerneck_z': 26,
-                  'lShoulder_1': 27,
-                  'rShoulder_1': 28,
-                  'upperneck_x': 29,
-                  'lShoulder_2': 30,
-                  'rShoulder_2': 31,
-                  'upperneck_y': 32,
-                  'lShoulder_torsion': 33,
-                  'rShoulder_torsion': 34,
-                  'upperneck_z': 35,
-                  'lElbow_flexion_extension': 36,
-                  'rElbow_flexion_extension': 37,
-                  'lElbow_torsion': 38,
-                  'rElbow_torsion': 39,
-                  'lWrist_x': 40,
-                  'rWrist_x': 41,
-                  'lWrist_z': 42,
-                  'rWrist_z': 43
-                  }
-rot_mappings = {'chest_rot': [joint_mappings['upperback_x'], 
-                              joint_mappings['upperback_y'], 
-                              joint_mappings['upperback_z']],
-                'neck_rot': [joint_mappings['lowerback_x'], 
-                             joint_mappings['lowerback_y'], 
-                             joint_mappings['lowerback_z']],
-                'rhip_rot': [joint_mappings['rHip_1'], 
-                             joint_mappings['rHip_2'], 
-                             joint_mappings['rHip_torsion']],
-                'rknee_rot': [joint_mappings['rKnee']],
-                'rankle_rot': [joint_mappings['rAnkle_1'],
-                               joint_mappings['lAnkle_2']],
-                'rshoulder_rot': [joint_mappings['rShoulder_1'], 
-                                  joint_mappings['rShoulder_2'], 
-                                  joint_mappings['rShoulder_torsion']],
-                'relbow_rot': [joint_mappings['rElbow_flexion_extension']],
-                'lhip_rot': [joint_mappings['lHip_1'],
-                             joint_mappings['lHip_2'],
-                             joint_mappings['lHip_torsion']],
-                'lknee_rot': [joint_mappings['rHip_torsion']],
-                'lankle_rot': [joint_mappings['lAnkle_1'],
-                               joint_mappings['lAnkle_2']],
-                'lshoulder_rot': [joint_mappings['lShoulder_1'],
-                                  joint_mappings['lShoulder_2'],
-                                  joint_mappings['lShoulder_torsion']],
-                'lelbow_rot': [joint_mappings['lElbow_flexion_extension']]
-}
 
 def get_observed_motion(observation_raw):
     d_quat = {}
@@ -167,8 +68,7 @@ def interpolate(target_motion, key, frame_idx, num_frames, loop_motion):
         
 
 def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_torques, action_buffer, is_obs_fullstate,
-                   joint_angles_default, nominal_base_height, target_motion, loop_motion):
-    target_motion = target_motion.copy()
+                   joint_angles_default, nominal_base_height, target_motion, loop_motion, phase):
     
     """
     Compute the reward based on observation (Vanilla Environment).
@@ -185,14 +85,14 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     :return: total reward, reward information (different terms can be passed here to be plotted in the graphs)
     """
     
-    with open('/local/home/xiychen/Documents/dh-project/n_steps.txt', 'r') as f:
-        i = int(f.readline())
+    # with open('/local/home/xiychen/Documents/dh-project/n_steps.txt', 'r') as f:
+    #     i = int(f.readline())
     
     observation = ObservationData(observation_raw, num_joints, is_obs_fullstate)
     
     num_frames = len(target_motion.keys())
-    duration = target_motion[0]['duration'][0]
-    phase = get_phase(dt, i, duration, num_frames, loop_motion)
+    # duration = target_motion[0]['duration'][0]
+    # phase = get_phase(dt, current_step, duration, num_frames, loop_motion)
     frame_idx = phase * num_frames # [0, num_frames]
     
     if loop_motion:
@@ -273,9 +173,9 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     
     
 
-    action_dot, action_ddot = calc_derivatives(action_buffer, dt, num_joints)
-    cmd_fwd_vel = params.get("fwd_vel_cmd", 1.0)
-    torque = tail(all_torques, num_joints)
+    # action_dot, action_ddot = calc_derivatives(action_buffer, dt, num_joints)
+    # cmd_fwd_vel = params.get("fwd_vel_cmd", 1.0)
+    # torque = tail(all_torques, num_joints)
 
     # =============
     # define cost/reward terms here:
@@ -284,17 +184,17 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     # Hints:
     # - Use function params.get("weight_velocity", 0) to get the value of parameters set in the .conf file.
     
-    forward_vel_reward = params.get("weight_velocity", 0) * np.exp(- (abs(observation.local_vel[2] - cmd_fwd_vel)**2) / (2*params.get("sigma_velocity", 0)**2))
+    # forward_vel_reward = params.get("weight_velocity", 0) * np.exp(- (abs(observation.local_vel[2] - cmd_fwd_vel)**2) / (2*params.get("sigma_velocity", 0)**2))
 
-    height_reward = params.get("weight_height", 0) * np.exp(- abs(observation.y - nominal_base_height)**2/(2*params.get("sigma_height", 0)**2))
+    # height_reward = params.get("weight_height", 0) * np.exp(- abs(observation.y - nominal_base_height)**2/(2*params.get("sigma_height", 0)**2))
 
-    attitude_reward = params.get("weight_attitude", 0) * np.exp(-(abs(observation.roll)**2+abs(observation.pitch)**2)/(4*params.get("sigma_attitude", 0)**2))
+    # attitude_reward = params.get("weight_attitude", 0) * np.exp(-(abs(observation.roll)**2+abs(observation.pitch)**2)/(4*params.get("sigma_attitude", 0)**2))
 
-    torque_reward = params.get("weight_torque", 0) * np.exp(-squared_norm(torque)/(2*num_joints*params.get("sigma_torque", 0)**2))
+    # torque_reward = params.get("weight_torque", 0) * np.exp(-squared_norm(torque)/(2*num_joints*params.get("sigma_torque", 0)**2))
         
-    smoothness1_reward = params.get("weight_smoothness1", 0) * np.exp(-squared_norm(action_dot)/(2*num_joints*params.get("sigma_smoothness1", 0)**2))
+    # smoothness1_reward = params.get("weight_smoothness1", 0) * np.exp(-squared_norm(action_dot)/(2*num_joints*params.get("sigma_smoothness1", 0)**2))
         
-    smoothness2_reward = params.get("weight_smoothness2", 0) * np.exp(-squared_norm(action_ddot)/(2*num_joints*params.get("sigma_smoothness2", 0)**2))
+    # smoothness2_reward = params.get("weight_smoothness2", 0) * np.exp(-squared_norm(action_ddot)/(2*num_joints*params.get("sigma_smoothness2", 0)**2))
 
     # joint_reward = params.get("weight_joints", 0) * np.exp(-squared_norm(observation.joint_angles - joint_angles_default)/(2*num_joints*params.get("sigma_joints", 0)**2))
 
@@ -304,7 +204,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     # =============
     # sum up rewards
     # =============
-    smoothness_reward = params.get("weight_smoothness", 0) * (smoothness1_reward + smoothness2_reward)
+    # smoothness_reward = params.get("weight_smoothness", 0) * (smoothness1_reward + smoothness2_reward)
     reward = 0.65*pose_reward + 0.15*velocity_reward
 
     info = {

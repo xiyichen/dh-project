@@ -104,11 +104,11 @@ class PylocoEnv(gym.Env):
                 np.array([0., 0., 0.]),  # base angular velocity
                 np.zeros(self.num_joints)  # joint velocity
             ), axis=None)
-
         self.observation_space = spaces.Box(
             low=self.observation_low,
             high=self.observation_high,
             shape=(len(self.observation_low),),
+            # shape=(len(self.observation_low+1),),
             dtype=np.float64)
 
         self.action_space = spaces.Box(
@@ -192,13 +192,14 @@ class PylocoEnv(gym.Env):
             del self._viewer
             self._viewer = None
 
-    def get_obs(self):
+    def get_obs(self, phase):
         q = self._sim.get_q()
         qdot = self._sim.get_qdot()
         if self.is_obs_fullstate:
             obs = np.concatenate((q, qdot), axis=None)
         else:
             obs = self.get_reduced_obs(q, qdot)
+        # obs = np.concatenate((obs, phase), axis=None)
         return obs
 
     def get_reduced_obs(self, q, qdot):

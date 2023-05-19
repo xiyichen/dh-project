@@ -2,6 +2,36 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 
+quat_euler_corr = {'x': 'z', 'y': 'y', 'z': 'x'}
+def get_quat_euler_coor(order):
+    res = ''
+    for c in order:
+        res += quat_euler_corr[c]
+    return res
+
+
+
+euler_quat_corr = {'x': 'z', 'y': 'y', 'z': 'x'}
+def get_euler_quat_coor(order):
+    res = ''
+    for c in order:
+        res += euler_quat_corr[c]
+    return res
+
+
+def quaternion_to_euler(wxyz, order='xyz'):
+    # order = get_quat_euler_coor(order)
+    xyzw = np.roll(wxyz, 3)
+    r = Rotation.from_quat(xyzw)
+    return r.as_euler(order, degrees=False)
+
+
+def euler_to_quaternion(euler, order='xyz'):
+    order = get_euler_quat_coor(order)
+    r = Rotation.from_euler(order, euler, degrees=False)
+    xyzw = r.as_quat()
+    return np.roll(xyzw, 1)
+
 class ObservationData:
     def __init__(self, observation_raw, num_joints, is_obs_fullstate=True):
         self.observation = observation_raw
