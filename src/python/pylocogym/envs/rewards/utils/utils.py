@@ -1,8 +1,63 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
+import math
+from pylocogym.envs.rewards.utils.mappings import *
 
+def get_observed_motion(observation_raw):
+    d_quat = {}
+    d_euler = {}
+    joint_angles_offset = 6
+    d_quat['root_pos'] = np.array(observation_raw[0:3])
+    d_euler['root_pos'] = np.array(observation_raw[0:3])
+    d_quat['root_rot'] = euler_to_quaternion(observation_raw[[3, 4, 5]], order='yzx', flip_z=True)
+    d_euler['root_rot'] = np.array(observation_raw[[3, 4, 5]])
+    d_quat['chest_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['chest_rot']]], order='zyx', flip_z=True)
+    d_euler['chest_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['chest_rot']]])
+    d_quat['neck_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['neck_rot']]], order='zyx', flip_z=True)
+    d_euler['neck_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['neck_rot']]])
+    d_quat['rhip_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['rhip_rot']]], order='zxy', flip_z=True)
+    d_euler['rhip_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['rhip_rot']]])
+    d_quat['rknee_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['rknee_rot']]]
+    d_euler['rknee_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['rknee_rot']]]
+    d_quat['rankle_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['rankle_rot']] + [0]], order='yxz', flip_z=False)
+    d_euler['rankle_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['rankle_rot']] + [0]])
+    d_quat['rshoulder_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['rshoulder_rot']]], order='zxy', flip_z=True)
+    d_euler['rshoulder_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['rshoulder_rot']]])
+    d_quat['relbow_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['relbow_rot']]]
+    d_euler['relbow_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['relbow_rot']]]
+    d_quat['lhip_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['lhip_rot']]], order='zxy', flip_z=True)
+    d_euler['lhip_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['lhip_rot']]])
+    d_quat['lknee_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lknee_rot']]]
+    d_euler['lknee_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lknee_rot']]]
+    d_quat['lankle_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['lankle_rot']] + [0]], order='yxz', flip_z=False)
+    d_euler['lankle_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['lankle_rot']] + [0]])
+    d_quat['lshoulder_rot'] = euler_to_quaternion([joint_angles_offset+x for x in rot_mappings['lshoulder_rot']], order='zxy', flip_z=True)
+    d_euler['lshoulder_rot'] = np.array([joint_angles_offset+x for x in rot_mappings['lshoulder_rot']])
+    d_quat['lelbow_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lelbow_rot']]]
+    d_euler['lelbow_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lelbow_rot']]]
+    return d_quat, d_euler
 
+def get_quaternion_difference(q1, q2):
+    q1_inv = Rotation.from_quat(q1).inv().as_quat()
+    return np.array(q2).dot(np.array(q1_inv))
 
+def interpolate(target_motion, key, frame_idx, num_frames, loop_motion):
+    frame_idx_floor = math.floor(frame_idx)
+    offset = frame_idx - frame_idx_floor
+    if frame_idx_floor < num_frames - 1:
+        # interpolate between frame_idx_floor and frame_idx_floor+1
+        r1 = np.array(target_motion[frame_idx_floor][key])
+        r2 = np.array(target_motion[frame_idx_floor+1][key])
+        return (1-offset)*r1 + offset*r2
+    else:
+        if loop_motion:
+            # interpolate between num_frames-1 and 0
+            r1 = np.array(target_motion[num_frames-1][key])
+            r2 = np.array(target_motion[0][key])
+            return (1-offset)*r1+offset*r2
+        else:
+            # the last frame
+            return np.array(target_motion[num_frames-1][key])
 
 def quaternion_to_euler(wxyz, order='xyz', flip_z=True):
     xyzw = np.roll(wxyz, 3)

@@ -221,13 +221,7 @@ class CustomPPO(PPO):
             # Clip the actions to avoid out of bound error
             if isinstance(self.action_space, spaces.Box):
                 clipped_actions = np.clip(actions, self.action_space.low, self.action_space.high)
-            # data = {'i': n_steps, 'clipped_actions': clipped_actions}
-            # clipped_actions = np.append(clipped_actions, 1)
-            # print(clipped_actions)
-            # global i
-            # i = n_steps
-            with open('/local/home/xiychen/Documents/dh-project/n_steps.txt', 'w') as f:
-                f.write(str(n_steps))
+            
             new_obs, rewards, dones, infos = env.step(clipped_actions)
 
             self.num_timesteps += env.num_envs

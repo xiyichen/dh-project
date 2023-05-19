@@ -151,7 +151,7 @@ class VanillaEnv(PylocoEnv):
     def get_phase(self):
         elapsed_time = self.cnt_timestep_size*self.current_step
         num_loops_passed = elapsed_time / (self.target_motion[0]['duration'][0] * len(self.target_motion.keys()))
-        
+                
         # e.g.: 25.6 -> 0.6
         phase = num_loops_passed - math.floor(num_loops_passed)
         num_loops_passed = math.floor(num_loops_passed)
@@ -177,7 +177,6 @@ class VanillaEnv(PylocoEnv):
         # update variables
         self.current_step += 1
         
-        
         phase, num_loops_passed = self.get_phase()
         
         observation = self.get_obs(phase)
@@ -195,6 +194,7 @@ class VanillaEnv(PylocoEnv):
                                          key in reward_info.keys()}
 
         # check if episode is done
+        # terminate if phase == 1 and loop_motion == False
         terminated, truncated, term_info = self.is_done(observation)
         done = terminated | truncated
 
