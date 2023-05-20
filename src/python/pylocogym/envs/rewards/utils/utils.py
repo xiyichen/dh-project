@@ -31,15 +31,18 @@ def get_observed_motion(observation_raw):
     d_euler['lknee_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lknee_rot']]]
     d_quat['lankle_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['lankle_rot']] + [0]], order='yxz', flip_z=False)
     d_euler['lankle_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['lankle_rot']] + [0]])
-    d_quat['lshoulder_rot'] = euler_to_quaternion([joint_angles_offset+x for x in rot_mappings['lshoulder_rot']], order='zxy', flip_z=True)
-    d_euler['lshoulder_rot'] = np.array([joint_angles_offset+x for x in rot_mappings['lshoulder_rot']])
+    d_quat['lshoulder_rot'] = euler_to_quaternion(observation_raw[[joint_angles_offset+x for x in rot_mappings['lshoulder_rot']]], order='zxy', flip_z=True)
+    d_euler['lshoulder_rot'] = np.array(observation_raw[[joint_angles_offset+x for x in rot_mappings['lshoulder_rot']]])
     d_quat['lelbow_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lelbow_rot']]]
     d_euler['lelbow_rot'] = observation_raw[[joint_angles_offset+x for x in rot_mappings['lelbow_rot']]]
     return d_quat, d_euler
 
+def quatmult(q0, q1):
+    return np.array([-q1[1]*q0[1] - q1[2]*q0[2] - q1[3]*q0[3] + q1[0]*q0[0], q1[1]*q0[0] + q1[2]*q0[3] - q1[3]*q0[2] + q1[0]*q0[1],-q1[1]*q0[3] + q1[2]*q0[0] + q1[3]*q0[1] + q1[0]*q0[2],q1[1]*q0[2] - q1[2]*q0[1] + q1[3]*q0[0] + q1[0]*q0[3]])
+
 def get_quaternion_difference(q1, q2):
     q1_inv = Rotation.from_quat(q1).inv().as_quat()
-    return np.array(q2).dot(np.array(q1_inv))
+    return quatmult(np.array(q2),np.array(q1_inv))
 
 def interpolate(target_motion, key, frame_idx, num_frames, loop_motion):
     frame_idx_floor = math.floor(frame_idx)

@@ -104,7 +104,7 @@ class VanillaEnv(PylocoEnv):
         self._sim.reset()
         observation = self.get_obs(0)
         q_init = observation[:50]
-        qdot_init = observation[50:]
+        qdot_init = observation[50:] #shouldn't we ignore the last index since it is the phase?
         frame_idx = 0
         q_init[0] = self.target_motion[frame_idx]['root_pos'][2]
         q_init[1] = self.target_motion[frame_idx]['root_pos'][1]
