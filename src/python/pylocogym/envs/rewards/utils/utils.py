@@ -79,6 +79,23 @@ def euler_to_quaternion(euler, order='xyz', flip_z=True):
     wxyz = np.roll(xyzw, 1)
     return wxyz
 
+def quat_to_axis_angle(quat):
+    theta=0
+    sin_theta = math.sqrt(1 - quat[0]**2)
+    if sin_theta>0.0001:
+        theta=2*math.acos(quat[0])
+        theta=NormalizeAngle(theta)
+    return theta
+
+def NormalizeAngle(theta):
+    theta=theta%(2*math.pi)
+    if theta>math.pi:
+        theta-=2*math.pi
+    elif theta<-math.pi:
+        theta+=2*math.pi
+    return theta
+
+
 class ObservationData:
     def __init__(self, observation_raw, num_joints, is_obs_fullstate=True):
         self.observation = observation_raw
