@@ -11,7 +11,7 @@ import time
 import math
 
 def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_torques, action_buffer, is_obs_fullstate,
-                   joint_angles_default, nominal_base_height, target_motion, loop_motion, phase, num_loops_passed):
+                   joint_angles_default, nominal_base_height, target_motion, loop_motion, phase, num_loops_passed,target_speed=0,target_heading=0):
     
     """
     Compute the reward based on observation (Vanilla Environment).
@@ -44,7 +44,6 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
 
     pose_reward = 0
     for key in observed_motion_quat:
-        #print(key)
         if key == 'root_pos':
             continue
         elif key in['lankle_rot', 'rankle_rot']:
@@ -69,12 +68,13 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         else:
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
             pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
-            '''
-            print(r_target)
+            '''print(get_quaternion_difference(observed_motion_quat[key], r_target))
             print(observed_motion_quat[key])
-            print(get_quaternion_difference(observed_motion_quat[key], r_target))
-            print(quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target)))
-            '''
+            print(r_target)'''
+            
+            
+            #print(quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target)))
+            
     pose_reward = np.exp(-2 * pose_reward)
     
     velocity_reward = 0
@@ -119,6 +119,9 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             v_observed = observation.joint_vel[rot_mappings[key]]
             v_diff = v_target - v_observed
             velocity_reward += (v_diff**2).sum()
+        '''print(key)
+        print(v_observed)
+        print(v_target)'''
     velocity_reward = np.exp(-0.1 * velocity_reward)
 
     
@@ -130,12 +133,22 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     root_pos_target = root_pos_target[[2, 1, 0]]
     
     center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
+    if target_speed!=0:
+        v_observed = np.array(observation.vel)
+        v_target= np.array([math.cos(target_heading),0,math.sin(target_heading)])
+        v_proj= np.dot(v_observed,v_target)
+
+        vel_error=max(target_speed- v_proj,0)
+
+        vel_target_reward=math.exp(-vel_error**2)
 
     # reward = 0.65*pose_reward \
     #          + 0.15*velocity_reward \
     #          + 0.1*center_of_mass_reward
     
-    reward = pose_reward
+    
+    reward = pose_reward 
+             
 
     info = {
         "pose_reward": pose_reward,
