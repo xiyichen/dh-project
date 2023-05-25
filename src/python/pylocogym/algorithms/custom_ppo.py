@@ -214,13 +214,44 @@ class CustomPPO(PPO):
                 # Convert to pytorch tensor or to TensorDict
                 obs_tensor = obs_as_tensor(self._last_obs, self.device)
                 actions, values, log_probs = self.policy(obs_tensor)
-            actions = actions.cpu().numpy()
+            actions = actions.cpu().numpy() #16, 26
+            
 
             # Rescale and perform action
             clipped_actions = actions
             # Clip the actions to avoid out of bound error
             if isinstance(self.action_space, spaces.Box):
                 clipped_actions = np.clip(actions, self.action_space.low, self.action_space.high)
+            
+            
+            actions_full = np.zeros((len(actions), 44)) #16, 44
+            actions_full[:, 0] = 0
+            actions_full[:, 1:3] = clipped_actions[:, 0:2]
+            actions_full[:, 3] = 0
+            actions_full[:, 4:6] = clipped_actions[:, 2:4]
+            actions_full[:, 6] = 0
+            actions_full[:, 7:19] = clipped_actions[:, 4:16]
+            actions_full[:, 19] = 0
+            actions_full[:, 20] = 0
+            actions_full[:, 21] = 0
+            actions_full[:, 22] = 0
+            actions_full[:, 23] = clipped_actions[:, 16]
+            actions_full[:, 24] = 0
+            actions_full[:, 25] = 0
+            actions_full[:, 26:29] = clipped_actions[:, 17:20]
+            actions_full[:, 29] = 0
+            actions_full[:, 30:32] = clipped_actions[:, 20:22]
+            actions_full[:, 32] = 0
+            actions_full[:, 33:35] = clipped_actions[:, 22:24]
+            actions_full[:, 35] = 0
+            actions_full[:, 36:38] = clipped_actions[:, 24:26]
+            actions_full[:, 38] = 0
+            actions_full[:, 39] = 0
+            actions_full[:, 40] = 0
+            actions_full[:, 41] = 0
+            actions_full[:, 42] = -0.2
+            actions_full[:, 43] = 0.2
+            clipped_actions = actions_full
             
             new_obs, rewards, dones, infos = env.step(clipped_actions)
 

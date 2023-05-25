@@ -120,12 +120,13 @@ class PylocoEnv(gym.Env):
         self.action_space = spaces.Box(
             low=-1.,
             high=1.,
-            shape=(self.num_joints,),
+            # shape=(self.num_joints,),
+            shape=(26,),
             dtype=np.float64)  # normalized
 
         self.current_step = 0
 
-    def is_done(self, observation):
+    def is_done(self, observation, phase, loop_motion):
         """ This function tells whether the episode is finished or not.
         Episode will finish if one of these conditions happen:
         1. max episode length is reached.
@@ -153,7 +154,10 @@ class PylocoEnv(gym.Env):
                     term_info = "robot collapsed!"
             terminated = True
             truncated = False
-
+        elif not loop_motion and phase >= 1:
+            term_info = "Non-loop motion completed!"
+            terminated = True
+            truncated = False
         elif self.current_step > self.max_episode_steps:
             term_info = "reached max episode steps!"
             terminated = False

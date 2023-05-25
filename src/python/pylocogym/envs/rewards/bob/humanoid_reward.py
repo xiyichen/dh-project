@@ -131,14 +131,16 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     
     center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
 
-    reward = 0.65*pose_reward \
-             + 0.15*velocity_reward \
-             + 0.1*center_of_mass_reward
+    # reward = 0.65*pose_reward \
+    #          + 0.15*velocity_reward \
+    #          + 0.1*center_of_mass_reward
+    
+    reward = pose_reward
 
     info = {
         "pose_reward": pose_reward,
-        "velocity_reward": velocity_reward,
-        "center_of_mass_reward": center_of_mass_reward
+        # "velocity_reward": velocity_reward,
+        # "center_of_mass_reward": center_of_mass_reward
     }
 
     return reward, info
