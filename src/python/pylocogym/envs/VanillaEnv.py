@@ -102,9 +102,11 @@ class VanillaEnv(PylocoEnv):
         self.box_throwing_counter = 0
         
         self._sim.reset()
-        observation = self.get_obs(0)
+        self.init_phase=np.random.uniform(0,1)
+        observation = self.get_obs(self.init_phase)
+        print(len(observation))
         q_init = observation[:50]
-        qdot_init = observation[50:] #shouldn't we ignore the last index since it is the phase?
+        qdot_init = observation[50:-1] #shouldn't we ignore the last index since it is the phase?
         frame_idx = 0
         t = self.target_motion[0]['duration'][0]
         num_frames = len(self.target_motion.keys())
@@ -162,7 +164,7 @@ class VanillaEnv(PylocoEnv):
     
     def get_phase(self):
         elapsed_time = self.cnt_timestep_size*self.current_step
-        num_loops_passed = elapsed_time / (self.target_motion[0]['duration'][0] * len(self.target_motion.keys()))
+        num_loops_passed = elapsed_time / (self.target_motion[0]['duration'][0] * len(self.target_motion.keys()))+self.init_phase
                 
         # e.g.: 25.6 -> 0.6
         phase = num_loops_passed - math.floor(num_loops_passed)
