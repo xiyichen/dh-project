@@ -104,35 +104,37 @@ class VanillaEnv(PylocoEnv):
         self._sim.reset()
         self.init_phase=np.random.uniform(0,1)
         observation = self.get_obs(self.init_phase)
-        print(len(observation))
         q_init = observation[:50]
-        qdot_init = observation[50:-1] #shouldn't we ignore the last index since it is the phase?
-        frame_idx = 0
+        qdot_init = observation[50:-1] 
+        
         t = self.target_motion[0]['duration'][0]
         num_frames = len(self.target_motion.keys())
+        loop_motion=False
+        target_motion=self.target_motion
+        frame_idx = self.init_phase * num_frames
         
-        q_init[0] = self.target_motion[frame_idx]['root_pos'][2]
-        q_init[1] = self.target_motion[frame_idx]['root_pos'][1]
-        q_init[2] = self.target_motion[frame_idx]['root_pos'][0]
-        root_euler = quaternion_to_euler(self.target_motion[frame_idx]['root_rot'], order='yzx', flip_z=True)
+        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]
+        q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
+        q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]
+        root_euler = quaternion_to_euler(interpolate(target_motion, 'root_rot', frame_idx, num_frames, loop_motion), order='yzx', flip_z=True)
         q_init[3:6] = root_euler
-        chest_euler = quaternion_to_euler(self.target_motion[frame_idx]['chest_rot'], order='zyx', flip_z=True)
+        chest_euler = quaternion_to_euler(interpolate(target_motion, 'chest_rot', frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
         q_init[[6+x for x in rot_mappings['chest_rot']]] = chest_euler
-        neck_euler = quaternion_to_euler(self.target_motion[frame_idx]['neck_rot'], order='zyx', flip_z=True)
+        neck_euler = quaternion_to_euler(interpolate(target_motion,'neck_rot' , frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
         q_init[[6+x for x in rot_mappings['neck_rot']]] = neck_euler
-        rhip_euler = quaternion_to_euler(self.target_motion[frame_idx]['rhip_rot'], order='zxy', flip_z=True)
+        rhip_euler = quaternion_to_euler(interpolate(target_motion,'rhip_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
         q_init[[6+x for x in rot_mappings['rhip_rot']]] = rhip_euler
-        q_init[[6+x for x in rot_mappings['rknee_rot']]] = -self.target_motion[0]['rknee_rot']
-        q_init[[6+x for x in rot_mappings['relbow_rot']]] = -self.target_motion[0]['relbow_rot']
-        lhip_euler = quaternion_to_euler(self.target_motion[frame_idx]['lhip_rot'], order='zxy', flip_z=True)
+        q_init[[6+x for x in rot_mappings['rknee_rot']]] = -interpolate(target_motion,'rknee_rot' , frame_idx, num_frames, loop_motion)
+        q_init[[6+x for x in rot_mappings['relbow_rot']]] = -interpolate(target_motion, 'relbow_rot', frame_idx, num_frames, loop_motion)
+        lhip_euler = quaternion_to_euler(interpolate(target_motion,'lhip_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
         q_init[[6+x for x in rot_mappings['lhip_rot']]] = lhip_euler
-        q_init[[6+x for x in rot_mappings['lknee_rot']]] = -self.target_motion[0]['lknee_rot']
-        q_init[[6+x for x in rot_mappings['lelbow_rot']]] = -self.target_motion[0]['lelbow_rot']
-        q_init[[6+x for x in rot_mappings['lankle_rot']]] = quaternion_to_euler(self.target_motion[frame_idx]['lankle_rot'], order='yxz', flip_z=False)[:2]
-        q_init[[6+x for x in rot_mappings['rankle_rot']]] = quaternion_to_euler(self.target_motion[frame_idx]['rankle_rot'], order='yxz', flip_z=False)[:2]
-        rshoulder_euler = quaternion_to_euler(self.target_motion[frame_idx]['rshoulder_rot'], order='zxy', flip_z=True)
+        q_init[[6+x for x in rot_mappings['lknee_rot']]] = -interpolate(target_motion,'lknee_rot' , frame_idx, num_frames, loop_motion)
+        q_init[[6+x for x in rot_mappings['lelbow_rot']]] = -interpolate(target_motion,'lelbow_rot' , frame_idx, num_frames, loop_motion)
+        q_init[[6+x for x in rot_mappings['lankle_rot']]] = quaternion_to_euler(interpolate(target_motion,'lankle_rot' , frame_idx, num_frames, loop_motion), order='yxz', flip_z=False)[:2]
+        q_init[[6+x for x in rot_mappings['rankle_rot']]] = quaternion_to_euler(interpolate(target_motion,'rankle_rot' , frame_idx, num_frames, loop_motion), order='yxz', flip_z=False)[:2]
+        rshoulder_euler = quaternion_to_euler(interpolate(target_motion,'rshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
         q_init[[6+x for x in rot_mappings['rshoulder_rot']]] = rshoulder_euler
-        lshoulder_euler = quaternion_to_euler(self.target_motion[frame_idx]['lshoulder_rot'], order='zxy', flip_z=True)
+        lshoulder_euler = quaternion_to_euler(interpolate(target_motion,'lshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
         q_init[[6+x for x in rot_mappings['lshoulder_rot']]] = lshoulder_euler
         
         v_target = (self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
@@ -173,6 +175,7 @@ class VanillaEnv(PylocoEnv):
         if num_loops_passed >= 1 and not self.loop_motion:
             num_loops_passed = 0
             phase = 1
+        
         
         return phase, num_loops_passed
 
