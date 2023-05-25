@@ -41,7 +41,7 @@ def quatmult(q0, q1):
     return np.array([-q1[1]*q0[1] - q1[2]*q0[2] - q1[3]*q0[3] + q1[0]*q0[0], q1[1]*q0[0] + q1[2]*q0[3] - q1[3]*q0[2] + q1[0]*q0[1],-q1[1]*q0[3] + q1[2]*q0[0] + q1[3]*q0[1] + q1[0]*q0[2],q1[1]*q0[2] - q1[2]*q0[1] + q1[3]*q0[0] + q1[0]*q0[3]])
 
 def get_quaternion_difference(q1, q2):
-    q1_inv = Rotation.from_quat(q1).inv().as_quat()
+    q1_inv = q1*[1,-1,-1,-1]
     return quatmult(np.array(q2),np.array(q1_inv))
 
 def interpolate(target_motion, key, frame_idx, num_frames, loop_motion):
