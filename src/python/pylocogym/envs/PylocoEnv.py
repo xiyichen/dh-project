@@ -126,7 +126,7 @@ class PylocoEnv(gym.Env):
 
         self.current_step = 0
 
-    def is_done(self, observation, phase, loop_motion):
+    def is_done(self, observation, reward_info, phase, loop_motion):
         """ This function tells whether the episode is finished or not.
         Episode will finish if one of these conditions happen:
         1. max episode length is reached.
@@ -162,12 +162,17 @@ class PylocoEnv(gym.Env):
             term_info = "reached max episode steps!"
             terminated = False
             truncated = True
-
         else:
-            term_info = " "
-            terminated = False
-            truncated = False
-
+            # terminate if the pose_rewards are too low
+            # print(reward_info['pose_reward'])
+            if False:
+                term_info = "Pose reward too low!"
+                terminated = True
+                truncated = False
+            else:
+                term_info = " "
+                terminated = False
+                truncated = False
         return terminated, truncated, term_info
 
     def render(self, mode="human", width=DEFAULT_SIZE, height=DEFAULT_SIZE):

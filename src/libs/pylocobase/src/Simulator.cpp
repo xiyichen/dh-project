@@ -138,6 +138,11 @@ void Simulator::applyControlSignal(const crl::dVector &jointTarget) {
         robot_->getJoint(i)->controlMode = crl::loco::RBJointControlMode::POSITION_MODE;
         robot_->getJoint(i)->motorKp = motorsKp;
         robot_->getJoint(i)->motorKd = motorsKd;
+        if (i == 0 || i == 3 || i == 6 || i == 19 || i == 20 || i == 21 || i == 22 || i == 24 || i == 25 ||
+        i == 29 || i == 32 || i == 35 || i == 38 || i == 39 || i == 40 || i == 41 || i == 42 || i == 43) {
+            robot_->getJoint(i)->motorKp = 1000000000000000000;
+            robot_->getJoint(i)->motorKd = 1000000000000000000;
+        }
         robot_->getJoint(i)->maxTorque = motorMaxTorque;
         robot_->getJoint(i)->desiredControlPosition = jointTarget[i];
         robot_->getJoint(i)->desiredControlSpeed = 0;

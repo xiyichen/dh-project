@@ -176,7 +176,6 @@ class VanillaEnv(PylocoEnv):
             num_loops_passed = 0
             phase = 1
         
-        
         return phase, num_loops_passed
 
     def step(self, action):
@@ -206,8 +205,8 @@ class VanillaEnv(PylocoEnv):
             action_full[39] = 0
             action_full[40] = 0
             action_full[41] = 0
-            action_full[42] = -0.2
-            action_full[43] = 0.2
+            action_full[42] = 0
+            action_full[43] = 0
             action = action_full
             
         # throw box if needed
@@ -224,8 +223,12 @@ class VanillaEnv(PylocoEnv):
         self.current_step += 1
         
         phase, num_loops_passed = self.get_phase()
+        num_frames = len(self.target_motion.keys())
+        frame_idx = phase * num_frames
         
         observation = self.get_obs(phase)
+        # print(observation[[6, 9, 12, 25, 26, 27, 28, 30, 31, 35, 38, 41, 44, 45, 46, 47, 48, 49]])
+        # exit()
         self.action_buffer = np.roll(self.action_buffer, self.num_joints)  # moving action buffer
         self.action_buffer[0:self.num_joints] = action_applied
 
@@ -234,14 +237,14 @@ class VanillaEnv(PylocoEnv):
                                                                self.reward_params, self.get_feet_status(),
                                                                self._sim.get_all_motor_torques(), self.action_buffer,
                                                                self.is_obs_fullstate, self.joint_angle_default,
-                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, phase, num_loops_passed)
-
+                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, frame_idx, num_loops_passed)
+        
         self.sum_episode_reward_terms = {key: self.sum_episode_reward_terms.get(key, 0) + reward_info.get(key, 0) for
                                          key in reward_info.keys()}
 
         # check if episode is done
         # terminate if phase == 1 and loop_motion == False
-        terminated, truncated, term_info = self.is_done(observation, phase, self.loop_motion)
+        terminated, truncated, term_info = self.is_done(observation, reward_info, phase, self.loop_motion)
         done = terminated | truncated
 
         # punishment for early termination

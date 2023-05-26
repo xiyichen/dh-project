@@ -398,7 +398,9 @@ RBJoint
 	child lumbar_tmp1
 	jointCPos 0 0 0
 	jointPPos 0 0.1125 0
-	jointLimits -0.5 0.5	
+	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -409,6 +411,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -419,6 +423,8 @@ RBJoint
 	jointCPos 0 -0.1125 0
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 
@@ -430,7 +436,9 @@ RBJoint
 	child torso_tmp1
 	jointCPos 0 0 0
 	jointPPos 0 0.1125 0
-	jointLimits -0.5 0.5	
+	jointLimits -0.5 0.5
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -441,6 +449,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -451,6 +461,8 @@ RBJoint
 	jointCPos 0 -0.1125 -0.028125
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -461,6 +473,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 0.16875 -0.028125
 	jointLimits -0.5 0.5	
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -471,6 +485,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -481,6 +497,8 @@ RBJoint
 	jointCPos 0 -0.05625 0
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -490,7 +508,9 @@ RBJoint
 	child head_tmp1
 	jointCPos 0 0 0
 	jointPPos 0 0.05625 0
-	jointLimits -0.5 0.5	
+	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -501,6 +521,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -511,6 +533,8 @@ RBJoint
 	jointCPos 0 -0.05625 -0.028125
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -521,6 +545,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0.028125 0.1125 0.05625
 	jointLimits -0.8 0.2
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -531,6 +557,8 @@ RBJoint
 	jointCPos -0.05625 0 0.084375
 	jointPPos 0 0 0
 	jointLimits -0.2 0.6
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 
@@ -541,7 +569,9 @@ RBJoint
 	child lUpperArm_tmp1
 	jointCPos 0 0 0
 	jointPPos 0.084375 0 0
-	jointLimits -3.0 0.5	
+	jointLimits -3.0 0.5
+	# jointMotorKp 300
+	# jointMotorKd 100	
 /End_Joint
 
 RBJoint
@@ -553,6 +583,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.3 1.2
 	defaultAngle 0.13
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -564,6 +596,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.75 1.0
 	defaultAngle -0.5
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 
@@ -576,6 +610,8 @@ RBJoint
 	jointPPos 0 -0.16875 0
 	jointLimits -2.5 0.0
 	defaultAngle -0.25
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -586,6 +622,8 @@ RBJoint
 	jointCPos 0 0.05625
 	jointPPos 0 -0.05625 0
 	jointLimits -1.0 1.6
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -596,6 +634,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 -0.1125 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -607,6 +647,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -1.0 1.0
 	defaultAngle -0.2
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 
@@ -618,6 +660,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos -0.028125 0.1125 0.05625
 	jointLimits -0.2 0.8
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -628,6 +672,8 @@ RBJoint
 	jointCPos 0.05625 0 0.084375
 	jointPPos 0 0 0
 	jointLimits -0.6 0.2
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -639,6 +685,8 @@ RBJoint
 	jointPPos -0.084375 0 0
 	jointLimits -3.0 0.5
 	defaultAngle 0	
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -650,6 +698,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -1.2 0.3
 	defaultAngle -0.13
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -661,6 +711,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.5 0.75
 	defaultAngle 0.5
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 
@@ -673,6 +725,8 @@ RBJoint
 	jointPPos 0 -0.16875 0
 	jointLimits -2.5 0
 	defaultAngle -0.25
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -683,6 +737,8 @@ RBJoint
 	jointCPos 0 0.05625
 	jointPPos 0 -0.05625 0
 	jointLimits -1.6 1.0
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -693,6 +749,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos 0 -0.1125 0
 	jointLimits -0.5 0.5
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 RBJoint
@@ -704,6 +762,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -1.0 1.0
 	defaultAngle 0.2
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 
@@ -714,7 +774,9 @@ RBJoint
 	child lUpperLeg_tmp1
 	jointCPos 0 0 0
 	jointPPos 0.1125 0 0
-	jointLimits -1.2 1.2	
+	jointLimits -1.2 1.2
+	# jointMotorKp 300
+	# jointMotorKd 100	
 /End_Joint
 
 RBJoint
@@ -726,6 +788,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.5 1.2
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -737,6 +801,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.75 0.75
 	defaultAngle -0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -748,6 +814,8 @@ RBJoint
 	jointPPos 0 -0.225 0
 	jointLimits 0 2.0
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -759,6 +827,8 @@ RBJoint
 	jointPPos 0 -0.225 0
 	jointLimits -0.5 0.9
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -770,6 +840,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -781,6 +853,8 @@ RBJoint
 	jointPPos 0 -0.02 0.0825
 	jointLimits -0.75 0.2
 	defaultAngle 0.0
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
 
@@ -792,6 +866,8 @@ RBJoint
 	jointCPos 0 0 0
 	jointPPos -0.1125 0 0
 	jointLimits -1.2 1.2	
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -803,6 +879,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -1.2 0.5
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -814,6 +892,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.75 0.75
 	defaultAngle -0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -825,6 +905,8 @@ RBJoint
 	jointPPos 0 -0.225 0
 	jointLimits 0 2.0
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -836,6 +918,8 @@ RBJoint
 	jointPPos 0 -0.225 0
 	jointLimits -0.5 0.9
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -847,6 +931,8 @@ RBJoint
 	jointPPos 0 0 0
 	jointLimits -0.5 0.5
 	defaultAngle 0.0
+	# jointMotorKp 300
+	# jointMotorKd 100
 /End_Joint
 
 RBJoint
@@ -858,5 +944,7 @@ RBJoint
 	jointPPos 0 -0.02 0.0825
 	jointLimits -0.75 0.2
 	defaultAngle 0.0
+	# jointMotorKp 30000000
+	# jointMotorKd 10000000
 /End_Joint
 
