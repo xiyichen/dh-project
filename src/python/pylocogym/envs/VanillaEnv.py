@@ -114,7 +114,7 @@ class VanillaEnv(PylocoEnv):
         frame_idx = self.init_phase * num_frames
         
         q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]
-        q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
+        # q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
         q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]
         root_euler = quaternion_to_euler(interpolate(target_motion, 'root_rot', frame_idx, num_frames, loop_motion), order='yzx', flip_z=True)
         q_init[3:6] = root_euler
@@ -137,24 +137,24 @@ class VanillaEnv(PylocoEnv):
         lshoulder_euler = quaternion_to_euler(interpolate(target_motion,'lshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
         q_init[[6+x for x in rot_mappings['lshoulder_rot']]] = lshoulder_euler
         
-        v_target = (self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
-        v_target = v_target[[2,1,0]]
-        qdot_init[:3] = v_target
-        qdot_init[3:6] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
-                          quaternion_to_euler(self.target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
-        for key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
-            qdot_init[[6+x for x in rot_mappings[key]]] = (self.target_motion[math.floor(frame_idx)][key] - self.target_motion[(math.floor(frame_idx)+1)%num_frames][key])[0]/t
-        for key in ['lankle_rot', 'rankle_rot']:
-            v_target = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='yxz', flip_z=False) - 
-                        quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='yxz', flip_z=False)) / t
-            v_target = v_target[:2]
-            qdot_init[[6+x for x in rot_mappings[key]]] = v_target
-        for key in ['chest_rot', 'neck_rot']:
-            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=False) - 
-                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=False)) / t
-        for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
-            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=False) - 
-                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=False)) / t
+        # v_target = (self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
+        # v_target = v_target[[2,1,0]]
+        # qdot_init[:3] = v_target
+        # qdot_init[3:6] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
+        #                   quaternion_to_euler(self.target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
+        # for key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
+        #     qdot_init[[6+x for x in rot_mappings[key]]] = (self.target_motion[math.floor(frame_idx)][key] - self.target_motion[(math.floor(frame_idx)+1)%num_frames][key])[0]/t
+        # for key in ['lankle_rot', 'rankle_rot']:
+        #     v_target = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='yxz', flip_z=False) - 
+        #                 quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='yxz', flip_z=False)) / t
+        #     v_target = v_target[:2]
+        #     qdot_init[[6+x for x in rot_mappings[key]]] = v_target
+        # for key in ['chest_rot', 'neck_rot']:
+        #     qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=False) - 
+        #                                                    quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=False)) / t
+        # for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
+        #     qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=False) - 
+        #                                                    quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=False)) / t
         
         self._sim.reset(q_init, qdot_init)
         self.sum_episode_reward_terms = {}

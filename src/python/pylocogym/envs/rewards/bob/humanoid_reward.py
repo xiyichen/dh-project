@@ -132,7 +132,8 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         root_pos_target += (mean_offset+offset)*num_loops_passed
     root_pos_target = root_pos_target[[2, 1, 0]]
     
-    center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
+    # center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
+    center_of_mass_reward = np.exp(-10*((root_pos_target[0] - observation_raw[0])**2+(root_pos_target[2] - observation_raw[2])**2))
     
     if target_speed!=0:
         v_observed = np.array(observation.vel)
@@ -144,8 +145,8 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         vel_target_reward=math.exp(-vel_error**2)
 
     reward = 0.65*pose_reward \
-            #  + 0.1*center_of_mass_reward \
-            #  + 0.15*velocity_reward
+             + 0.1*center_of_mass_reward \
+             + 0.15*velocity_reward
     
     
     # reward = pose_reward 
@@ -153,8 +154,8 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
 
     info = {
         "pose_reward": pose_reward,
-        # "center_of_mass_reward": center_of_mass_reward,
-        # "velocity_reward": velocity_reward,
+        "center_of_mass_reward": center_of_mass_reward,
+        "velocity_reward": velocity_reward,
     }
 
     return reward, info
