@@ -19,7 +19,7 @@ pyloco = importlib.util.module_from_spec(spec)
 sys.modules["module.name"] = pyloco
 spec.loader.exec_module(pyloco)
 
-def load_target_motion(motion_clip='run', data_path='/root/dh-project/data/robots/motions'):
+def load_target_motion(motion_clip, data_path):
     fn = os.path.join(data_path, 'humanoid3d_{}.txt'.format(motion_clip))
     dict = json.load(open(fn))
     frames = dict['Frames']
@@ -57,7 +57,7 @@ def load_target_motion(motion_clip='run', data_path='/root/dh-project/data/robot
 
 class VanillaEnv(PylocoEnv):
 
-    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='run'):
+    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='walk'):
         sim_dt = 1.0 / env_params['simulation_rate']
         con_dt = 1.0 / env_params['control_rate']
 
@@ -77,8 +77,8 @@ class VanillaEnv(PylocoEnv):
         self.box_throwing_strength = 2
         self.box_throwing_counter = 0
         self.target_motion = load_target_motion(motion_clip, os.path.join(os.getcwd(), 'data/robots/motions/'))
-        self.loop_motion = not ('getup' in motion_clip or 'kick' in motion_clip or 'punch' in motion_clip)
-
+        # self.loop_motion = not ('getup' in motion_clip or 'kick' in motion_clip or 'punch' in motion_clip)
+        self.loop_motion = False
         if "reward_file_path" in reward_params.keys():
             reward_file_path = reward_params["reward_file_path"]
 
@@ -102,7 +102,7 @@ class VanillaEnv(PylocoEnv):
         self.box_throwing_counter = 0
         
         self._sim.reset()
-        self.init_phase=np.random.uniform(0,1)
+        self.init_phase=np.random.uniform(0,0.85)
         observation = self.get_obs(self.init_phase)
         q_init = observation[:50]
         qdot_init = observation[50:-1] 
@@ -137,25 +137,26 @@ class VanillaEnv(PylocoEnv):
         lshoulder_euler = quaternion_to_euler(interpolate(target_motion,'lshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
         q_init[[6+x for x in rot_mappings['lshoulder_rot']]] = lshoulder_euler
         
-        # v_target = (self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
-        # v_target = v_target[[2,1,0]]
-        # qdot_init[:3] = v_target
-        # qdot_init[3:6] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
-        #                   quaternion_to_euler(self.target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
-        # for key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
-        #     qdot_init[[6+x for x in rot_mappings[key]]] = (self.target_motion[math.floor(frame_idx)][key] - self.target_motion[(math.floor(frame_idx)+1)%num_frames][key])[0]/t
-        # for key in ['lankle_rot', 'rankle_rot']:
-        #     v_target = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='yxz', flip_z=False) - 
-        #                 quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='yxz', flip_z=False)) / t
-        #     v_target = v_target[:2]
-        #     qdot_init[[6+x for x in rot_mappings[key]]] = v_target
-        # for key in ['chest_rot', 'neck_rot']:
-        #     qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=False) - 
-        #                                                    quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=False)) / t
-        # for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
-        #     qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=False) - 
-        #                                                    quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=False)) / t
-        
+        if frame_idx < num_frames:
+            v_target = (self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
+            v_target = v_target[[2,1,0]]
+            qdot_init[:3] = v_target
+        qdot_init[3:6] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
+                          quaternion_to_euler(self.target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
+        for key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
+            qdot_init[[6+x for x in rot_mappings[key]]] = (self.target_motion[math.floor(frame_idx)][key] - self.target_motion[(math.floor(frame_idx)+1)%num_frames][key])[0]/t
+        for key in ['lankle_rot', 'rankle_rot']:
+            v_target = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='yxz', flip_z=False) - 
+                        quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='yxz', flip_z=False)) / t
+            v_target = v_target[:2]
+            qdot_init[[6+x for x in rot_mappings[key]]] = v_target
+        for key in ['chest_rot', 'neck_rot']:
+            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=False) - 
+                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=False)) / t
+        for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
+            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=False) - 
+                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=False)) / t
+        self.q_init = q_init
         self._sim.reset(q_init, qdot_init)
         self.sum_episode_reward_terms = {}
         self.action_buffer = np.concatenate(
@@ -224,7 +225,7 @@ class VanillaEnv(PylocoEnv):
         
         phase, num_loops_passed = self.get_phase()
         num_frames = len(self.target_motion.keys())
-        frame_idx = phase * num_frames
+        frame_idx = phase * (num_frames-1)
         
         observation = self.get_obs(phase)
         # print(observation[[6, 9, 12, 25, 26, 27, 28, 30, 31, 35, 38, 41, 44, 45, 46, 47, 48, 49]])
@@ -237,7 +238,7 @@ class VanillaEnv(PylocoEnv):
                                                                self.reward_params, self.get_feet_status(),
                                                                self._sim.get_all_motor_torques(), self.action_buffer,
                                                                self.is_obs_fullstate, self.joint_angle_default,
-                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, frame_idx, num_loops_passed)
+                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, frame_idx, num_loops_passed, self.init_phase, phase, self.q_init)
         
         self.sum_episode_reward_terms = {key: self.sum_episode_reward_terms.get(key, 0) + reward_info.get(key, 0) for
                                          key in reward_info.keys()}

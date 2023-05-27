@@ -166,7 +166,7 @@ class PylocoEnv(gym.Env):
             # terminate if the pose_rewards are too low
             # print(reward_info['pose_reward'])
             
-            # if reward_info['pose_reward'] < 0.01:
+            # if reward_info['pose_reward'] < 0.001:
             #     term_info = "Pose reward too low!"
             #     terminated = True
             #     truncated = False

@@ -80,6 +80,7 @@ def euler_to_quaternion(euler, order='xyz', flip_z=True):
     return wxyz
 
 def quat_to_axis_angle(quat):
+    # print(quat)
     theta=0
     sin_theta = math.sqrt(1 - quat[0]**2)
     if sin_theta>0.0001:
