@@ -77,8 +77,8 @@ class VanillaEnv(PylocoEnv):
         self.box_throwing_strength = 2
         self.box_throwing_counter = 0
         self.target_motion = load_target_motion(motion_clip, os.path.join(os.getcwd(), 'data/robots/motions/'))
-        # self.loop_motion = not ('getup' in motion_clip or 'kick' in motion_clip or 'punch' in motion_clip)
-        self.loop_motion = False
+        self.loop_motion = not ('getup' in motion_clip or 'kick' in motion_clip or 'punch' in motion_clip)
+        # self.loop_motion = False
         if "reward_file_path" in reward_params.keys():
             reward_file_path = reward_params["reward_file_path"]
 
@@ -102,7 +102,7 @@ class VanillaEnv(PylocoEnv):
         self.box_throwing_counter = 0
         
         self._sim.reset()
-        self.init_phase=np.random.uniform(0,0.85)
+        self.init_phase=np.random.uniform(0,1)
         observation = self.get_obs(self.init_phase)
         q_init = observation[:50]
         qdot_init = observation[50:-1] 
@@ -111,7 +111,7 @@ class VanillaEnv(PylocoEnv):
         num_frames = len(self.target_motion.keys())
         loop_motion=False
         target_motion=self.target_motion
-        frame_idx = self.init_phase * num_frames
+        frame_idx = self.init_phase * (num_frames-1)
         
         q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]
         # q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
