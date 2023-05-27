@@ -50,7 +50,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
             euler_target = quaternion_to_euler(r_target, order='yxz', flip_z=False)
             diff = abs(euler_target - observed_motion_euler[key])**2
-            pose_reward += (diff[0]+diff[1])
+            pose_reward += ((diff[0]+diff[1])/2)
             # print(key, euler_target, observed_motion_euler[key])
             '''
             print(r_target)
@@ -67,16 +67,27 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             print(observed_motion_quat[key])
             print((observed_motion_quat[key][0] - r_target)**2)
             '''
+        elif key in ['chest_rot', 'neck_rot']:
+            r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            euler_target = quaternion_to_euler(r_target, order='zyx', flip_z=False)
+            pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
+        elif key == 'root_rot':
+            r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            euler_target = quaternion_to_euler(r_target, order='yzx', flip_z=False)
+            pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
         else:
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
-            pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
-            # print(key, r_target, observed_motion_quat[key])
-            '''print(get_quaternion_difference(observed_motion_quat[key], r_target))
-            print(observed_motion_quat[key])
-            print(r_target)'''
+            euler_target = quaternion_to_euler(r_target, order='zxy', flip_z=False)
+            pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
             
+        # else:
+        #     r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+        #     pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
+        #     # print(key, r_target, observed_motion_quat[key])
+        #     '''print(get_quaternion_difference(observed_motion_quat[key], r_target))
+        #     print(observed_motion_quat[key])
+        #     print(r_target)'''
             
-            #print(quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target)))
     # exit()
     pose_reward = np.exp(-2 * pose_reward)
     
