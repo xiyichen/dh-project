@@ -166,7 +166,8 @@ class VanillaEnv(PylocoEnv):
         for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
             qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=True) - 
                                                            quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=True)) / t
-        qdot_init *= prev_episode_length_ratio    
+        if self.reward_params.get('velocity_initialization_curriculum', False):
+            qdot_init *= prev_episode_length_ratio
         
         self.q_init = q_init
         self._sim.reset(q_init, qdot_init)

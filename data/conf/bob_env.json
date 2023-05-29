@@ -26,6 +26,7 @@
     "use_random_command": false
   },
   "reward_params": {
+    "velocity_initialization_curriculum": false,
     "fwd_vel_cmd": 0.0,
     "weight_velocity": 1.0e-2,
     "sigma_velocity": 0.5,
