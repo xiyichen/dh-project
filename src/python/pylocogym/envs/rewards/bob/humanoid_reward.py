@@ -58,7 +58,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             print(observed_motion_euler[key])
             print(diff)
             '''
-        elif key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
+        elif key in ['lknee_rot', 'rknee_rot']:
             r_target = -interpolate(target_motion, key, frame_idx, num_frames, loop_motion)[0]
             pose_reward += (observed_motion_quat[key][0] - r_target)**2
             # print(key, r_target, observed_motion_euler[key])
@@ -67,18 +67,30 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             print(observed_motion_quat[key])
             print((observed_motion_quat[key][0] - r_target)**2)
             '''
+        elif key in ['lelbow_rot', 'relbow_rot']:
+            r_target = -interpolate(target_motion, key, frame_idx, num_frames, loop_motion)[0]
+            pose_reward += (observed_motion_quat[key][0] - r_target)**2
         elif key in ['chest_rot', 'neck_rot']:
+            # r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            # euler_target = quaternion_to_euler(r_target, order='zyx', flip_z=True)
+            # pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
-            euler_target = quaternion_to_euler(r_target, order='zyx', flip_z=False)
-            pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
+            pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
         elif key == 'root_rot':
+            # r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            # euler_target = quaternion_to_euler(r_target, order='yzx', flip_z=True)
+            # pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
-            euler_target = quaternion_to_euler(r_target, order='yzx', flip_z=False)
-            pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
+            pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
+        elif key in ['lhip_rot', 'rhip_rot']:
+            r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
         else:
+            # r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            # euler_target = quaternion_to_euler(r_target, order='zxy', flip_z=True)
+            # pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
-            euler_target = quaternion_to_euler(r_target, order='zxy', flip_z=False)
-            pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
+            pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
             
         # else:
         #     r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
@@ -146,8 +158,8 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         root_pos_target += (mean_offset+offset)*num_loops_passed
     root_pos_target = root_pos_target[[2, 1, 0]]
     
-    # center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
-    center_of_mass_reward = np.exp(-10*((root_pos_target[0] - observation_raw[0])**2+(root_pos_target[2] - observation_raw[2])**2))
+    center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
+    # center_of_mass_reward = np.exp(-10*((root_pos_target[0] - observation_raw[0])**2+(root_pos_target[2] - observation_raw[2])**2))
     
     height_reward = params.get("weight_height", 0) * np.exp(- abs(observation.y - nominal_base_height)**2/(2*params.get("sigma_height", 0)**2))
     
@@ -163,7 +175,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     reward = 0.65*pose_reward \
              + 0.1*center_of_mass_reward \
              + 0.15*velocity_reward \
-             + height_reward
+            #  + height_reward
     
     
     # reward = pose_reward 
@@ -173,7 +185,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         "pose_reward": pose_reward,
         "center_of_mass_reward": center_of_mass_reward,
         "velocity_reward": velocity_reward,
-        "height_reward": height_reward
+        # "height_reward": height_reward
     }
 
     return reward, info

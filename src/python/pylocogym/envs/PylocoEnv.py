@@ -156,8 +156,8 @@ class PylocoEnv(gym.Env):
             truncated = False
         elif not loop_motion and phase >= 1:
             term_info = "Non-loop motion completed!"
-            terminated = True
-            truncated = False
+            terminated = False
+            truncated = True
         elif self.current_step > self.max_episode_steps:
             term_info = "reached max episode steps!"
             terminated = False
