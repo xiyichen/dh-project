@@ -10,7 +10,7 @@
     "time_steps": 50e6,
     "save_freq": 1e4,
     "max_episode_steps": 200,
-    "max_evaluation_steps": 100,
+    "max_evaluation_steps": 200,
     "seed": 313,
     "normalize_observation": false,
     "normalize_reward": false
@@ -26,7 +26,7 @@
     "use_random_command": false
   },
   "reward_params": {
-    "velocity_initialization_curriculum": false,
+    "velocity_initialization_curriculum": true,
     "fwd_vel_cmd": 0.0,
     "weight_velocity": 1.0e-2,
     "sigma_velocity": 0.5,

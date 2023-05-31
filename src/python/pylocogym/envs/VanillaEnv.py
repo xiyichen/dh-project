@@ -92,6 +92,8 @@ class VanillaEnv(PylocoEnv):
         self.reward_params = reward_params
         self.sum_episode_reward_terms = {}
         self.action_buffer = np.zeros(self.num_joints * 3)  # history of actions [current, previous, past previous]
+        # self.switched_motion = False
+        # self.last_ep_len_mean = 0
 
         self.rng = np.random.default_rng(
             env_params.get("seed", 1))  # create a local random number generator with seed
@@ -99,6 +101,11 @@ class VanillaEnv(PylocoEnv):
     def reset(self, seed=None, return_info=False, options=None):
         # super().reset(seed=seed)  # We need this line to seed self.np_random
         prev_episode_length_ratio = self.current_step/self.max_episode_steps
+        # if self.current_step > 150 and not self.switched_motion:
+        # if self.last_ep_len_mean > 100 and not self.switched_motion:
+        #     self.switched_motion = True
+        #     print('Switched to run.')
+        #     self.target_motion = load_target_motion('run', os.path.join(os.getcwd(), 'data/robots/motions/'))
         # print(self.current_step, self.max_episode_steps, prev_episode_length_ratio)
         self.current_step = 0
         self.box_throwing_counter = 0
@@ -166,8 +173,8 @@ class VanillaEnv(PylocoEnv):
         for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
             qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=True) - 
                                                            quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=True)) / t
-        if self.reward_params.get('velocity_initialization_curriculum', False):
-            qdot_init *= prev_episode_length_ratio
+        # if self.reward_params.get('velocity_initialization_curriculum', False):
+        #     qdot_init *= min(1, 5*prev_episode_length_ratio)
         
         self.q_init = q_init
         self._sim.reset(q_init, qdot_init)
@@ -193,6 +200,10 @@ class VanillaEnv(PylocoEnv):
         return phase, num_loops_passed
 
     def step(self, action):
+        # if len(action) == 27:
+        #     last_ep_len_mean = action[-1]
+        #     action = action[:-1]
+        #     self.last_ep_len_mean = last_ep_len_mean
         if len(action) == 26:
             action_full = np.zeros(44) #16, 44
             action_full[0] = 0
@@ -231,7 +242,10 @@ class VanillaEnv(PylocoEnv):
 
         # run simulation
         action_applied = self.scale_action(action)
-        self._sim.step(action_applied)
+        
+        with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'r') as f:
+            curr_max_episode_length = float(f.readline())
+        self._sim.step(action_applied, curr_max_episode_length)
         
         # update variables
         self.current_step += 1

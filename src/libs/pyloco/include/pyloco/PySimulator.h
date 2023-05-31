@@ -28,11 +28,12 @@ public:
         );
     }
 
-    void step(const crl::dVector &jointTarget) override {
+    void step(const crl::dVector &jointTarget, float curr_max_episode_length) override {
         PYBIND11_OVERRIDE_PURE(void,       /* Return type */
                                Simulator,  /* Parent class */
                                step,       /* Name of function in C++ (must match Python name) */
-                               jointTarget /* Argument(s) */
+                               jointTarget,
+                               curr_max_episode_length /* Argument(s) */
         );
     }
 };

@@ -42,6 +42,7 @@ class CustomPPO(PPO):
             policy_kwargs=policy_kwargs,
             seed=seed,
         )
+        # self.last_ep_len_mean = 0
 
     def train(self) -> None:
         """
@@ -221,7 +222,7 @@ class CustomPPO(PPO):
             # Clip the actions to avoid out of bound error
             if isinstance(self.action_space, spaces.Box):
                 clipped_actions = np.clip(actions, self.action_space.low, self.action_space.high)
-            
+            # clipped_actions_plus = np.concatenate((clipped_actions, self.last_ep_len_mean*np.ones((16, 1))), axis=1)
             new_obs, rewards, dones, infos = env.step(clipped_actions)
 
             self.num_timesteps += env.num_envs
@@ -311,6 +312,11 @@ class CustomPPO(PPO):
                 if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
                     self.logger.record("rollout/ep_rew_mean", safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
                     self.logger.record("rollout/ep_len_mean", safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
+                    with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'r') as f:
+                        curr_max_episode_length = float(f.readline())
+                    with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'w') as f:
+                        f.write(str(max(curr_max_episode_length, safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))))
+                    # self.last_ep_len_mean = safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer])
                 self.logger.record("time/fps", fps)
                 self.logger.record("time/time_elapsed", int(time.time() - self.start_time), exclude="tensorboard")
                 self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")

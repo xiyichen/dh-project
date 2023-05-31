@@ -92,7 +92,7 @@ public:
     /**
      * environment step. apply control and call simulation steps. implement logic in derived class.
      */
-    virtual void step(const crl::dVector &jointTarget) = 0;
+    virtual void step(const crl::dVector &jointTarget, float curr_max_episode_length) = 0;
 
     /**
      * get simulation time since it's been started (or restarted)

@@ -4,13 +4,16 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "name": "Python: Current File",
+            "name": "debug",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "/local/home/xiychen/Documents/dh-project/src/python/main.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {"PYTHONPATH": "/local/home/xiychen/miniconda3/envs/pylocoEnv/bin/python"},
+            "args": ["-vr", "-c=bob_env.json", "--rewardFile=./bob/humanoid_reward.py"]
         }
     ]
 }

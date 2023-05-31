@@ -7,6 +7,7 @@
 
 #include "crl-basic/gui/plots.h"
 #include "pylocobase/sim/Simulator.h"
+#include "loco/simulation/ode/ODERBEngine.h"
 
 namespace pyloco {
 
@@ -68,9 +69,20 @@ public:
         allLoopMotorTorques.setZero();
     }
 
-    void step(const crl::dVector &jointTarget) override {
+    void step(const crl::dVector &jointTarget, float curr_max_episode_length) override {
         crl::dVector initial_joint_angles = getQ().tail(numJoints_);
         allLoopMotorTorques.setZero();  // set to zero
+        crl::V3D gravity = crl::V3D(0, -4.9, 0);
+
+        if (curr_max_episode_length >= 50) {
+            gravity[1] = -6.5;
+        } else if (curr_max_episode_length >= 60) {
+            gravity[1] = -8.7;
+        } else if (curr_max_episode_length >= 70) {
+            gravity[1] = -9.8;
+        }
+
+        dWorldSetGravity(rbEngine_->getWorldID(), gravity[0], gravity[1], gravity[2]);
 
         applyControlSignal(jointTarget);
         jointActionPlot->addData((float)getTimeStamp(), jointTarget);
