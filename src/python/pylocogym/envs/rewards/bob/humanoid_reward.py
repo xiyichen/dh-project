@@ -11,7 +11,7 @@ import time
 import math
 
 def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_torques, action_buffer, is_obs_fullstate,
-                   joint_angles_default, nominal_base_height, target_motion, loop_motion, frame_idx, num_loops_passed, init_phase, phase, q_init, target_speed=0, target_heading=0):
+                   joint_angles_default, nominal_base_height, target_motion, loop_motion, frame_idx, num_loops_passed,target_speed, target_heading):
     
     """
     Compute the reward based on observation (Vanilla Environment).
@@ -173,7 +173,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         vel_target_reward=math.exp(-vel_error**2)
 
     reward = 0.65*pose_reward \
-             + 0.1*center_of_mass_reward \
+             + 0.1*vel_target_reward \
              + 0.15*velocity_reward \
             #  + height_reward
     

@@ -105,9 +105,16 @@ class VanillaEnv(PylocoEnv):
         
         self._sim.reset()
         self.init_phase=np.random.uniform(0,1)
-        observation = self.get_obs(self.init_phase)
+        self.theta=np.random.uniform(0,3.1415*2)
+        self.speed=np.random.uniform(0.5,2)
+
+        print( self.speed)
+        print( self.theta)
+        print("=====================================")
+
+        observation = self.get_obs(self.init_phase,self.speed,self.theta)
         q_init = observation[:50]
-        qdot_init = observation[50:-1] 
+        qdot_init = observation[50:-3] 
         
         t = self.target_motion[0]['duration'][0]
         num_frames = len(self.target_motion.keys())
@@ -120,11 +127,13 @@ class VanillaEnv(PylocoEnv):
             mean_offset += (target_motion[i]['root_pos']-target_motion[i-1]['root_pos'])
         mean_offset /= (num_frames-1)
         
-        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]
+        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]*self.speed*math.cos(self.theta)
         q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
-        q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]
+        q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]*self.speed*math.sin(self.theta)
         root_euler = quaternion_to_euler(interpolate(target_motion, 'root_rot', frame_idx, num_frames, loop_motion), order='yzx', flip_z=True)
-        q_init[3:6] = root_euler
+        q_init[3]=root_euler[0]+self.theta
+        q_init[4:6] = root_euler[1:3]
+
         chest_euler = quaternion_to_euler(interpolate(target_motion, 'chest_rot', frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
         q_init[[6+x for x in rot_mappings['chest_rot']]] = chest_euler
         neck_euler = quaternion_to_euler(interpolate(target_motion,'neck_rot' , frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
@@ -240,7 +249,7 @@ class VanillaEnv(PylocoEnv):
         num_frames = len(self.target_motion.keys())
         frame_idx = phase * (num_frames-1)
         
-        observation = self.get_obs(phase)
+        observation = self.get_obs(phase,self.speed,self.theta)
         # print(observation[[6, 9, 12, 25, 26, 27, 28, 30, 31, 35, 38, 41, 44, 45, 46, 47, 48, 49]])
         # exit()
         self.action_buffer = np.roll(self.action_buffer, self.num_joints)  # moving action buffer
@@ -251,7 +260,7 @@ class VanillaEnv(PylocoEnv):
                                                                self.reward_params, self.get_feet_status(),
                                                                self._sim.get_all_motor_torques(), self.action_buffer,
                                                                self.is_obs_fullstate, self.joint_angle_default,
-                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, frame_idx, num_loops_passed, self.init_phase, phase, self.q_init)
+                                                               self._sim.nominal_base_height, self.target_motion, self.loop_motion, frame_idx, num_loops_passed, self.speed, self.theta)
         
         self.sum_episode_reward_terms = {key: self.sum_episode_reward_terms.get(key, 0) + reward_info.get(key, 0) for
                                          key in reward_info.keys()}
