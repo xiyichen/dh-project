@@ -57,7 +57,7 @@ def load_target_motion(motion_clip, data_path):
 
 class VanillaEnv(PylocoEnv):
 
-    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='run'):
+    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='walk'):
         sim_dt = 1.0 / env_params['simulation_rate']
         con_dt = 1.0 / env_params['control_rate']
 
@@ -108,9 +108,6 @@ class VanillaEnv(PylocoEnv):
         self.theta=np.random.uniform(0,3.1415*2)
         self.speed=np.random.uniform(0.5,2)
 
-        print( self.speed)
-        print( self.theta)
-        print("=====================================")
 
         observation = self.get_obs(self.init_phase,self.speed,self.theta)
         q_init = observation[:50]
@@ -127,9 +124,9 @@ class VanillaEnv(PylocoEnv):
             mean_offset += (target_motion[i]['root_pos']-target_motion[i-1]['root_pos'])
         mean_offset /= (num_frames-1)
         
-        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]*self.speed*math.cos(self.theta)
+        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]*self.speed*math.sin(self.theta)
         q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
-        q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]*self.speed*math.sin(self.theta)
+        q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]*self.speed*math.cos(self.theta)
         root_euler = quaternion_to_euler(interpolate(target_motion, 'root_rot', frame_idx, num_frames, loop_motion), order='yzx', flip_z=True)
         q_init[3]=root_euler[0]+self.theta
         q_init[4:6] = root_euler[1:3]
