@@ -3,12 +3,12 @@
 
 RB
 	name pelvis
-	mass 8.352
+	mass 0.01
 	position 0 0.90 0
 	moi 0.015536 0.035968 0.039424 0 0 0
 	mesh robots/bob/meshes/pelvis.obj
 
-	mass	6.4072265625					
+	mass	0.01			
 	moi	0.0304092979431152	0.0422351360321045	0.0422351360321045	0	0	0
 
 	collisionSphere 0 0.1125 0 0.05	
@@ -17,13 +17,13 @@ RB
 
 RB
 	name lumbar_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name lumbar_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -31,20 +31,20 @@ RB
 	name lumbar
 	mesh robots/bob/meshes/lowerBack.obj
 	meshTransformation 1 0 0 0	 0 -0.225 0
-	mass	5.6953125					
+	mass	0.01
 	moi	0.0300338745117188	0.0300338745117188	0.04805419921875	0	0	0
 	collisionSphere 0 0.1125 0 0.05	
 /End_RB
 
 RB
 	name torso_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name torso_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -52,7 +52,7 @@ RB
 	name torso
 	mesh robots/bob/meshes/torso.obj
 	meshTransformation 1 0 0 0	 0 -0.45 -0.028125	
-	mass	19.2216796875					
+	mass	0.01
 	moi	0.228069734573364	0.228069734573364	0.364911575317383	0	0	0
 
 	collisionSphere 0 0.16875 -0.028125 0.05	
@@ -63,13 +63,13 @@ RB
 RB
 	name neck_tmp1
 
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name neck_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -77,19 +77,19 @@ RB
 	name neck
 	mesh robots/bob/meshes/neck.obj
 	meshTransformation 1 0 0 0	 0 -0.675 0	
-	mass	0.35595703125					
+	mass	0.01
 	moi	0.000469279289245605	0.000187711715698242	0.000469279289245605	0	0	0	
 /End_RB
 
 RB
 	name head_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name head_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -97,7 +97,7 @@ RB
 	name head
 	mesh robots/bob/meshes/head.obj
 	meshTransformation 1 0 0 0	 0 -0.7875 -0.028125
-	mass	4.271484375					
+	mass	0.01
 	moi	0.0281567573547363	0.0146415138244629	0.0225254058837891	0	0	0	
 	collisionSphere 0 0 0 0.1	
 
@@ -105,7 +105,7 @@ RB
 
 RB
 	name lScapula_tmp
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -113,19 +113,19 @@ RB
 	name lScapula
 	mesh robots/bob/meshes/lScapula.obj
 	meshTransformation 1 0 0 0 	-0.084375 -0.5625 0
-	mass	0.35595703125					
+	mass	0.01
 	moi	0.000187711715698242	0.000469279289245605	0.000469279289245605	0	0	0	
 /End_RB
 
 RB
 	name lUpperArm_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name lUpperArm_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -133,7 +133,7 @@ RB
 	name lUpperArm
 	mesh robots/bob/meshes/lUpperArm.obj
 	meshTransformation 1 0 0 0 	-0.16875 -0.39375 0
-	mass	2.4027099609375					
+	mass	0.01
 	moi	0.02423240929842	0.00285087168216705	0.02423240929842	0	0	0	
 
 	collisionSphere 0 0.16875 0 0.04	
@@ -142,7 +142,7 @@ RB
 
 RB
 	name lLowerArm_tmp
-	mass	0.8009033203125					
+	mass	0.01
 	moi	0.00131984800100327	0.000950290560722351	0.00131984800100327	0	0	0	
 /End_RB
 
@@ -150,14 +150,14 @@ RB
 	name lLowerArm
 	mesh robots/bob/meshes/lLowerArm.obj
 	meshTransformation 1 0 0 0 	-0.16875 -0.16875 0
-	mass	0.8009033203125					
+	mass	0.01
 	moi	0.00131984800100327	0.000950290560722351	0.00131984800100327	0	0	0	
 /End_RB
 
 
 RB
 	name lHand_tmp
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -165,7 +165,7 @@ RB
 	name lHand
 	mesh robots/bob/meshes/lHand.obj
 	meshTransformation 1 0 0 0 	-0.16875 0.1125 0
-	mass	0.40045166015625					
+	mass	0.01
 	moi	0.00118786320090294	0.000263969600200653	0.000976687520742416	0	0	0
 
 	collisionSphere 0 -0.03 0 0.02	
@@ -176,7 +176,7 @@ RB
 
 RB
 	name rScapula_tmp
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -184,19 +184,19 @@ RB
 	name rScapula
 	mesh robots/bob/meshes/rScapula.obj
 	meshTransformation 1 0 0 0 	0.084375 -0.5625 0
-	mass	0.35595703125					
+	mass	0.01
 	moi	0.000187711715698242	0.000469279289245605	0.000469279289245605	0	0	0	
 /End_RB
 
 RB
 	name rUpperArm_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name rUpperArm_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -204,7 +204,7 @@ RB
 	name rUpperArm
 	mesh robots/bob/meshes/rUpperArm.obj
 	meshTransformation 1 0 0 0 	0.16875 -0.39375 0
-	mass	2.4027099609375					
+	mass	0.01
 	moi	0.02423240929842	0.00285087168216705	0.02423240929842	0	0	0	
 	collisionSphere 0 0.16875 0 0.04	
 	collisionSphere 0 -0.16875 0 0.04	
@@ -215,19 +215,19 @@ RB
 	name rLowerArm
 	mesh robots/bob/meshes/rLowerArm.obj
 	meshTransformation 1 0 0 0 	0.16875 -0.16875 0
-	mass	0.8009033203125					
+	mass	0.01
 	moi	0.00131984800100327	0.000950290560722351	0.00131984800100327	0	0	0	
 /End_RB
 
 RB
 	name rLowerArm_tmp
-	mass	0.8009033203125					
+	mass	0.01
 	moi	0.00131984800100327	0.000950290560722351	0.00131984800100327	0	0	0
 /End_RB
 
 RB
 	name rHand_tmp
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -235,7 +235,7 @@ RB
 	name rHand
 	mesh robots/bob/meshes/rHand.obj
 	meshTransformation 1 0 0 0 	0.16875 0.1125 0
-	mass	0.40045166015625					
+	mass	0.01
 	moi	0.00118786320090294	0.000263969600200653	0.000976687520742416	0	0	0
 
 	collisionSphere 0 -0.03 0 0.02	
@@ -246,13 +246,13 @@ RB
 
 RB
 	name lUpperLeg_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name lUpperLeg_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -260,7 +260,7 @@ RB
 	name lUpperLeg
 	mesh robots/bob/meshes/lUpperLeg.obj
 	meshTransformation 1 0 0 0 	-0.1125 0.225 0
-	mass	5.6953125					
+	mass	0.01
 	moi	0.102115173339844	0.0120135498046875	0.102115173339844	0	0	0
 
 
@@ -272,7 +272,7 @@ RB
 	name lLowerLeg
 	mesh robots/bob/meshes/lLowerLeg.obj
 	meshTransformation 1 0 0 0 	-0.1125 0.61875 0
-	mass	3.20361328125					
+	mass	0.01
 	moi	0.0559615552425385	0.0038011622428894	0.0559615552425385	0	0	0
 	collisionSphere 0 -0.225 0 0.03
     endEffector 0 -0.225 0 0.03
@@ -281,7 +281,7 @@ RB
 
 RB
 	name lFoot_tmp
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -289,7 +289,7 @@ RB
 	name lFoot
 	mesh robots/bob/meshes/lFoot.obj
 	meshTransformation 1 0 0 0 	-0.1125 0.871875 -0.03
-	mass	0.533935546875					
+	mass	0.01
 	moi	0.00140783786773682	0.00140783786773682	0.000281567573547363 0	0	0	
 
 	collisionSphere 0.03 -0.02 -0.07 0.01
@@ -306,7 +306,7 @@ RB
 	name lToes
 	mesh robots/bob/meshes/lToes.obj
 	meshTransformation 1 0 0 0 	-0.1125 0.891875 -0.140625
-	mass	0.13348388671875					
+	mass	0.01
 	moi	0.0000549936667084694	0.0000703918933868408	0.0000549936667084694	0	0	0	
 
 	collisionSphere 0.03 0 0.015 0.01
@@ -320,13 +320,13 @@ RB
 
 RB
 	name rUpperLeg_tmp1
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
 RB
 	name rUpperLeg_tmp2
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -334,7 +334,7 @@ RB
 	name rUpperLeg
 	mesh robots/bob/meshes/rUpperLeg.obj
 	meshTransformation 1 0 0 0 	0.1125 0.225 0
-	mass	5.6953125					
+	mass	0.01
 	moi	0.102115173339844	0.0120135498046875	0.102115173339844	0	0	0	
 	collisionSphere 0 -0.225 0 0.05	
 
@@ -347,7 +347,7 @@ RB
 	name rLowerLeg
 	mesh robots/bob/meshes/rLowerLeg.obj
 	meshTransformation 1 0 0 0 	0.1125 0.61875 0
-	mass	3.20361328125					
+	mass	0.01
 	moi	0.0559615552425385	0.0038011622428894	0.0559615552425385	0	0	0	
 	collisionSphere 0 -0.225 0 0.03
 	endEffector 0 -0.225 0 0.03
@@ -355,7 +355,7 @@ RB
 
 RB
 	name rFoot_tmp
-	mass	0.35					
+	mass	0.01
 	moi	0.0003	0.0003	0.0003	0	0	0
 /End_RB
 
@@ -363,7 +363,7 @@ RB
 	name rFoot
 	mesh robots/bob/meshes/rFoot.obj
 	meshTransformation 1 0 0 0 	0.1125 0.871875 -0.03
-	mass	0.533935546875					
+	mass	0.01
 	moi	0.00140783786773682	0.00140783786773682	0.000281567573547363 0	0	0	
 
 
@@ -380,7 +380,7 @@ RB
 	name rToes
 	mesh robots/bob/meshes/rToes.obj
 	meshTransformation 1 0 0 0 	0.1125 0.891875 -0.140625
-	mass	0.13348388671875					
+	mass	0.01
 	moi	0.0000549936667084694	0.0000703918933868408	0.0000549936667084694	0	0	0
 
 	collisionSphere 0.03 0 0.015 0.01

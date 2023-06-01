@@ -140,9 +140,9 @@ public:
         }
 
         if (curr_max_episode_length < 40) {
-            robot_->root->rbProps.mass = 0;
+            robot_->root->rbProps.mass = 0.01;
             for (uint i = 0; i < robot_->jointList.size(); i++) {
-                robot_->jointList[i]->child->rbProps.mass = 0;
+                robot_->jointList[i]->child->rbProps.mass = 0.01;
             }
         } else if (curr_max_episode_length >= 40 && curr_max_episode_length < 50) {
             robot_->root->rbProps.mass *= 0.25;
