@@ -165,7 +165,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     
     if target_speed!=0:
         v_observed = np.array(observation.vel)
-        v_target= np.array([math.cos(target_heading),0,math.sin(target_heading)])
+        v_target= np.array([math.sin(target_heading),0,math.cos(target_heading)])
         v_proj= np.dot(v_observed,v_target)
 
         vel_error=max(target_speed- v_proj,0)
