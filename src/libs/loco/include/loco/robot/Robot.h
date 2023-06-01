@@ -30,7 +30,8 @@ public:
     bool showMOI = false;
     bool showCoordFrame = false;
 
-protected:
+// protected:
+public:
     // root configuration
     std::shared_ptr<RB> root = nullptr;
     // keep lists of all the joints and all the RBs of the robot, for easy access
@@ -40,7 +41,6 @@ protected:
     //useful to know which way is "forward" for this robot.
     V3D forward = V3D(0, 0, 1);
 
-public:
     /** the constructor */
     Robot(const char *filePath, const char *statePath = nullptr, bool loadVisuals = true);
 

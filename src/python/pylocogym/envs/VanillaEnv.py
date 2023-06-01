@@ -244,7 +244,10 @@ class VanillaEnv(PylocoEnv):
         action_applied = self.scale_action(action)
         
         with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'r') as f:
-            curr_max_episode_length = float(f.readline())
+            try:
+                curr_max_episode_length = float(f.readline())
+            except:
+                curr_max_episode_length = 0
         self._sim.step(action_applied, curr_max_episode_length)
         
         # update variables

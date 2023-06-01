@@ -6,8 +6,7 @@ namespace crl::loco {
 
 // assume that the gravity is in the y-direction (this can easily be changed if
 // need be), and this value gives its magnitude.
-// double RBGlobals::g = -9.8;
-double RBGlobals::g = -4.9;
+double RBGlobals::g = -9.8;
 // this is the direction of the up-vector
 V3D RBGlobals::worldUp = V3D(0, 1, 0);
 // and the ground plane
