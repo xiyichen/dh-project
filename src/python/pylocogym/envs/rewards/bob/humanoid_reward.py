@@ -31,6 +31,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     
     num_frames = len(target_motion.keys())
     # frame_idx = phase * num_frames # [0, num_frames]
+    observation_raw[3]-=target_heading
     
     observed_motion_quat, observed_motion_euler = get_observed_motion(observation_raw)
     # print(phase, init_phase, frame_idx, q_init)
@@ -90,6 +91,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             # euler_target = quaternion_to_euler(r_target, order='zxy', flip_z=True)
             # pose_reward += ((observed_motion_euler[key] - euler_target)**2).mean()
             r_target = interpolate(target_motion, key, frame_idx, num_frames, loop_motion)
+            euler_target = quaternion_to_euler(r_target, order='zxy', flip_z=True)
             pose_reward += quat_to_axis_angle(get_quaternion_difference(observed_motion_quat[key], r_target))**2
             
         # else:
@@ -107,14 +109,15 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     t=target_motion[0]['duration'][0]
     for key in observed_motion_euler:
         if key == 'root_pos':
-            if (math.floor(frame_idx)+1)%num_frames == 0:
+            continue
+            '''if (math.floor(frame_idx)+1)%num_frames == 0:
                 v_target =mean_offset/t
             else:
                 v_target = (target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - target_motion[math.floor(frame_idx)]['root_pos'])/t # zyx
             v_observed = observation.vel # xyz
             v_observed = v_observed[[2,1,0]]
             v_diff = v_target - v_observed
-            velocity_reward += (v_diff**2).mean()
+            velocity_reward += (v_diff**2).mean()'''
         elif key == 'root_rot':
             v_target = (quaternion_to_euler(target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
                         quaternion_to_euler(target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
@@ -173,7 +176,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
         vel_target_reward=math.exp(-vel_error**2)
 
     reward = 0.65*pose_reward \
-             + 0.1*vel_target_reward \
+             + 0.2*vel_target_reward \
              + 0.15*velocity_reward \
             #  + height_reward
     
@@ -183,8 +186,9 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
 
     info = {
         "pose_reward": pose_reward,
-        "center_of_mass_reward": center_of_mass_reward,
+        #"center_of_mass_reward": center_of_mass_reward,
         "velocity_reward": velocity_reward,
+        "vel_target_reward": vel_target_reward,
         # "height_reward": height_reward
     }
 
