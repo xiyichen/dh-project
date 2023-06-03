@@ -123,13 +123,15 @@ class VanillaEnv(PylocoEnv):
         for i in range(1, num_frames):
             mean_offset += (target_motion[i]['root_pos']-target_motion[i-1]['root_pos'])
         mean_offset /= (num_frames-1)
-        
-        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]*self.speed*math.sin(self.theta)
-        q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
-        q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]*self.speed*math.cos(self.theta)
+
+        r=math.sqrt(interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]**2+interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]**2)
         root_euler = quaternion_to_euler(interpolate(target_motion, 'root_rot', frame_idx, num_frames, loop_motion), order='yzx', flip_z=True)
         q_init[3]=root_euler[0]+self.theta
         q_init[4:6] = root_euler[1:3]
+        q_init[0] = r*self.speed*math.sin(q_init[3])
+        q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
+        q_init[2] = r*self.speed*math.cos(q_init[3])
+        
 
         chest_euler = quaternion_to_euler(interpolate(target_motion, 'chest_rot', frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
         q_init[[6+x for x in rot_mappings['chest_rot']]] = chest_euler
@@ -157,6 +159,8 @@ class VanillaEnv(PylocoEnv):
             v_target = (self.target_motion[0]['root_pos'] + offset + mean_offset - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
         v_target = v_target[[2,1,0]]
         qdot_init[:3] = v_target
+        qdot_init[0] = self.speed*math.sin(self.theta)
+        qdot_init[2] = self.speed*math.cos(self.theta)
         qdot_init[3:6] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
         for key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
