@@ -312,9 +312,9 @@ class CustomPPO(PPO):
                 if len(self.ep_info_buffer) > 0 and len(self.ep_info_buffer[0]) > 0:
                     self.logger.record("rollout/ep_rew_mean", safe_mean([ep_info["r"] for ep_info in self.ep_info_buffer]))
                     self.logger.record("rollout/ep_len_mean", safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))
-                    with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'r') as f:
+                    with open('/local/home/xiychen/Documents/dh-project-skill-selector/curr_max_episode_length.txt', 'r') as f:
                         curr_max_episode_length = float(f.readline())
-                    with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'w') as f:
+                    with open('/local/home/xiychen/Documents/dh-project-skill-selector/curr_max_episode_length.txt', 'w') as f:
                         f.write(str(max(curr_max_episode_length, safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer]))))
                     # self.last_ep_len_mean = safe_mean([ep_info["l"] for ep_info in self.ep_info_buffer])
                 self.logger.record("time/fps", fps)

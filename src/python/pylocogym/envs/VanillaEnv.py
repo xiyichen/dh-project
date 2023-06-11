@@ -12,6 +12,7 @@ import numpy as np
 import math
 from pylocogym.envs.rewards.utils.mappings import *
 from pylocogym.envs.rewards.utils.utils import *
+import random
 
 # importing pyloco
 spec = importlib.util.spec_from_file_location("pyloco", PYLOCO_LIB_PATH)
@@ -94,6 +95,7 @@ class VanillaEnv(PylocoEnv):
         self.action_buffer = np.zeros(self.num_joints * 3)  # history of actions [current, previous, past previous]
         # self.switched_motion = False
         # self.last_ep_len_mean = 0
+        self.selected_motion = None
 
         self.rng = np.random.default_rng(
             env_params.get("seed", 1))  # create a local random number generator with seed
@@ -112,9 +114,14 @@ class VanillaEnv(PylocoEnv):
         
         self._sim.reset()
         self.init_phase=np.random.uniform(0,1)
-        observation = self.get_obs(self.init_phase)
+        self.selected_motion = random.randint(0,1)
+        if self.selected_motion == 0:
+            self.target_motion = load_target_motion('walk', os.path.join(os.getcwd(), 'data/robots/motions/'))
+        else:
+            self.target_motion = load_target_motion('run', os.path.join(os.getcwd(), 'data/robots/motions/'))
+        observation = self.get_obs(self.init_phase, self.selected_motion)
         q_init = observation[:50]
-        qdot_init = observation[50:-1] 
+        qdot_init = observation[50:-3] 
         
         t = self.target_motion[0]['duration'][0]
         num_frames = len(self.target_motion.keys())
@@ -243,7 +250,7 @@ class VanillaEnv(PylocoEnv):
         # run simulation
         action_applied = self.scale_action(action)
         
-        with open('/local/home/xiychen/Documents/dh-project/curr_max_episode_length.txt', 'r') as f:
+        with open('/local/home/xiychen/Documents/dh-project-skill-selector/curr_max_episode_length.txt', 'r') as f:
             try:
                 curr_max_episode_length = float(f.readline())
             except:
@@ -253,11 +260,19 @@ class VanillaEnv(PylocoEnv):
         # update variables
         self.current_step += 1
         
+        if self.current_step == 200:
+            if self.selected_motion == 0:
+                self.selected_motion = 1
+                self.target_motion = load_target_motion('run', os.path.join(os.getcwd(), 'data/robots/motions/'))
+            else:
+                self.selected_motion = 0
+                self.target_motion = load_target_motion('walk', os.path.join(os.getcwd(), 'data/robots/motions/'))
+        
         phase, num_loops_passed = self.get_phase()
         num_frames = len(self.target_motion.keys())
         frame_idx = phase * (num_frames-1)
         
-        observation = self.get_obs(phase)
+        observation = self.get_obs(phase, self.selected_motion)
         # print(observation[[6, 9, 12, 25, 26, 27, 28, 30, 31, 35, 38, 41, 44, 45, 46, 47, 48, 49]])
         # exit()
         self.action_buffer = np.roll(self.action_buffer, self.num_joints)  # moving action buffer

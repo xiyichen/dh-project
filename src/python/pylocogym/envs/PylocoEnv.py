@@ -57,6 +57,8 @@ class PylocoEnv(gym.Env):
                 np.array([-50., -50., -50.]),  # base linear velocity
                 np.array([-50., -50., -50.]),  # base angular velocity
                 -50. * np.ones(self.num_joints),  # joint velocity
+                0,
+                0,
                 0
             ), axis=None)
 
@@ -67,6 +69,8 @@ class PylocoEnv(gym.Env):
                 np.array([50., 50., 50.]),  # base linear velocity
                 np.array([50., 50., 50.]),  # base angular velocity
                 50. * np.ones(self.num_joints),  # joint velocity
+                1,
+                1,
                 1
             ), axis=None)
 
@@ -77,7 +81,9 @@ class PylocoEnv(gym.Env):
                 np.array([0., 0., 0.]),  # base linear velocity
                 np.array([0., 0., 0.]),  # base angular velocity
                 np.zeros(self.num_joints),  # joint velocity
-                0
+                0,
+                0,
+                1
             ), axis=None)
 
         else:
@@ -208,14 +214,17 @@ class PylocoEnv(gym.Env):
             del self._viewer
             self._viewer = None
 
-    def get_obs(self, phase):
+    def get_obs(self, phase, selected_motion):
         q = self._sim.get_q()
         qdot = self._sim.get_qdot()
         if self.is_obs_fullstate:
             obs = np.concatenate((q, qdot), axis=None)
         else:
             obs = self.get_reduced_obs(q, qdot)
-        obs = np.concatenate((obs, phase), axis=None)
+        if selected_motion == 0:
+            obs = np.concatenate((obs, phase, 0, 1), axis=None)
+        else:
+            obs = np.concatenate((obs, phase, 1, 0), axis=None)
         return obs
 
     def get_reduced_obs(self, q, qdot):
