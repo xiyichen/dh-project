@@ -120,28 +120,28 @@ class VanillaEnv(PylocoEnv):
             mean_offset += (target_motion[i]['root_pos']-target_motion[i-1]['root_pos'])
         mean_offset /= (num_frames-1)
         
-        q_init[0] = interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]
+        q_init[0] = -interpolate(target_motion,'root_pos' , frame_idx, num_frames, loop_motion)[2]
         q_init[1] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[1]
         q_init[2] = interpolate(target_motion, 'root_pos', frame_idx, num_frames, loop_motion)[0]
         root_euler = quaternion_to_euler(interpolate(target_motion, 'root_rot', frame_idx, num_frames, loop_motion), order='yzx', flip_z=True)
         q_init[3:6] = root_euler
         chest_euler = quaternion_to_euler(interpolate(target_motion, 'chest_rot', frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
         q_init[[6+x for x in rot_mappings['chest_rot']]] = chest_euler
-        neck_euler = quaternion_to_euler(interpolate(target_motion,'neck_rot' , frame_idx, num_frames, loop_motion), order='zyx', flip_z=True)
+        neck_euler = quaternion_to_euler(interpolate(target_motion,'neck_rot' , frame_idx, num_frames, loop_motion), order='zyx', flip_z=False)
         q_init[[6+x for x in rot_mappings['neck_rot']]] = neck_euler
-        rhip_euler = quaternion_to_euler(interpolate(target_motion,'rhip_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
+        rhip_euler = quaternion_to_euler(interpolate(target_motion,'rhip_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True, flip_y=True)
         q_init[[6+x for x in rot_mappings['rhip_rot']]] = rhip_euler
         q_init[[6+x for x in rot_mappings['rknee_rot']]] = -interpolate(target_motion,'rknee_rot' , frame_idx, num_frames, loop_motion)
         q_init[[6+x for x in rot_mappings['relbow_rot']]] = -interpolate(target_motion, 'relbow_rot', frame_idx, num_frames, loop_motion)
-        lhip_euler = quaternion_to_euler(interpolate(target_motion,'lhip_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
+        lhip_euler = quaternion_to_euler(interpolate(target_motion,'lhip_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True, flip_y=True)
         q_init[[6+x for x in rot_mappings['lhip_rot']]] = lhip_euler
         q_init[[6+x for x in rot_mappings['lknee_rot']]] = -interpolate(target_motion,'lknee_rot' , frame_idx, num_frames, loop_motion)
         q_init[[6+x for x in rot_mappings['lelbow_rot']]] = -interpolate(target_motion,'lelbow_rot' , frame_idx, num_frames, loop_motion)
         q_init[[6+x for x in rot_mappings['lankle_rot']]] = quaternion_to_euler(interpolate(target_motion,'lankle_rot' , frame_idx, num_frames, loop_motion), order='yxz', flip_z=False)[:2]
         q_init[[6+x for x in rot_mappings['rankle_rot']]] = quaternion_to_euler(interpolate(target_motion,'rankle_rot' , frame_idx, num_frames, loop_motion), order='yxz', flip_z=False)[:2]
-        rshoulder_euler = quaternion_to_euler(interpolate(target_motion,'rshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
+        rshoulder_euler = quaternion_to_euler(interpolate(target_motion,'rshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True, flip_y=True)
         q_init[[6+x for x in rot_mappings['rshoulder_rot']]] = rshoulder_euler
-        lshoulder_euler = quaternion_to_euler(interpolate(target_motion,'lshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True)
+        lshoulder_euler = quaternion_to_euler(interpolate(target_motion,'lshoulder_rot' , frame_idx, num_frames, loop_motion), order='zxy', flip_z=True, flip_y=True)
         q_init[[6+x for x in rot_mappings['lshoulder_rot']]] = lshoulder_euler
         
         # v_target = (self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
@@ -150,7 +150,7 @@ class VanillaEnv(PylocoEnv):
         else:
             v_target = (self.target_motion[0]['root_pos'] + offset + mean_offset - self.target_motion[math.floor(frame_idx)]['root_pos'])/t
         v_target = v_target[[2,1,0]]
-        qdot_init[:3] = v_target
+        qdot_init[:3] = v_target * [-1,1,1]
         qdot_init[3:6] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames]['root_rot'], order='yzx', flip_z=True) - 
                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)]['root_rot'], order='yzx', flip_z=True)) / t
         for key in ['lknee_rot', 'rknee_rot', 'lelbow_rot', 'relbow_rot']:
@@ -160,12 +160,13 @@ class VanillaEnv(PylocoEnv):
                         quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='yxz', flip_z=False)) / t
             v_target = v_target[:2]
             qdot_init[[6+x for x in rot_mappings[key]]] = v_target
-        for key in ['chest_rot', 'neck_rot']:
-            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=True) - 
+        qdot_init[[6+x for x in rot_mappings['chest_rot']]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=True) - 
                                                            quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=True)) / t
+        qdot_init[[6+x for x in rot_mappings['neck_rot']]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=False) - 
+                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=False)) / t
         for key in ['lshoulder_rot', 'rshoulder_rot', 'lhip_rot', 'rhip_rot']:
-            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=True) - 
-                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=True)) / t
+            qdot_init[[6+x for x in rot_mappings[key]]] = (quaternion_to_euler(self.target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=True, flip_y=True) - 
+                                                           quaternion_to_euler(self.target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=True, flip_y=True)) / t
         if self.reward_params.get('velocity_initialization_curriculum', False):
             qdot_init *= prev_episode_length_ratio
         
