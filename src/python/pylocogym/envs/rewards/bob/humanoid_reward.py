@@ -112,7 +112,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             else:
                 v_target = (target_motion[(math.floor(frame_idx)+1)%num_frames]['root_pos'] - target_motion[math.floor(frame_idx)]['root_pos'])/t # zyx
             v_observed = observation.vel # xyz
-            v_observed = v_observed[[2,1,0]]
+            v_observed = v_observed[[2,1,0]]*[-1,1,1]
             v_diff = v_target - v_observed
             velocity_reward += (v_diff**2).mean()
         elif key == 'root_rot':
@@ -133,15 +133,21 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
             v_observed = observation.joint_vel[rot_mappings[key]]
             v_diff = v_target - v_observed
             velocity_reward += (v_diff**2).mean()
-        elif key in ['chest_rot', 'neck_rot']:
+        elif key in ['chest_rot']:
             v_target = (quaternion_to_euler(target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=True) - 
                         quaternion_to_euler(target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=True)) / t
             v_observed = observation.joint_vel[rot_mappings[key]]
             v_diff = v_target - v_observed
             velocity_reward += (v_diff**2).mean()
+        elif key in ['neck_rot']:
+            v_target = (quaternion_to_euler(target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zyx', flip_z=False) - 
+                        quaternion_to_euler(target_motion[math.floor(frame_idx)][key], order='zyx', flip_z=False)) / t
+            v_observed = observation.joint_vel[rot_mappings[key]]
+            v_diff = v_target - v_observed
+            velocity_reward += (v_diff**2).mean()
         else:
-            v_target = (quaternion_to_euler(target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=True) - 
-                        quaternion_to_euler(target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=True)) / t
+            v_target = (quaternion_to_euler(target_motion[(math.floor(frame_idx)+1)%num_frames][key], order='zxy', flip_z=True, flip_y=True) - 
+                        quaternion_to_euler(target_motion[math.floor(frame_idx)][key], order='zxy', flip_z=True, flip_y=True)) / t
             v_observed = observation.joint_vel[rot_mappings[key]]
             v_diff = v_target - v_observed
             velocity_reward += (v_diff**2).mean()
@@ -156,7 +162,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
     
     if loop_motion:
         root_pos_target += (mean_offset+offset)*num_loops_passed
-    root_pos_target = root_pos_target[[2, 1, 0]]
+    root_pos_target = root_pos_target[[2, 1, 0]]*[-1,1,1]
     
     center_of_mass_reward = np.exp(-10*((root_pos_target - observation_raw[:3])**2).sum())
     # center_of_mass_reward = np.exp(-10*((root_pos_target[0] - observation_raw[0])**2+(root_pos_target[2] - observation_raw[2])**2))
