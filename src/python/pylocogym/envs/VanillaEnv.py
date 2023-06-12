@@ -57,7 +57,7 @@ def load_target_motion(motion_clip, data_path):
 
 class VanillaEnv(PylocoEnv):
 
-    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='run'):
+    def __init__(self, max_episode_steps, env_params, reward_params, motion_clip='punch'):
         sim_dt = 1.0 / env_params['simulation_rate']
         con_dt = 1.0 / env_params['control_rate']
 

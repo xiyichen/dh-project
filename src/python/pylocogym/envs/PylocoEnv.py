@@ -174,6 +174,9 @@ class PylocoEnv(gym.Env):
             term_info = " "
             terminated = False
             truncated = False
+
+        terminated=True
+        truncated=True
         return terminated, truncated, term_info
 
     def render(self, mode="human", width=DEFAULT_SIZE, height=DEFAULT_SIZE):
