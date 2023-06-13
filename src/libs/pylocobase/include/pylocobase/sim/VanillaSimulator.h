@@ -83,88 +83,88 @@ public:
         crl::dVector initial_joint_angles = getQ().tail(numJoints_);
         allLoopMotorTorques.setZero();  // set to zero
 
-        robot_->root->rbProps.mass = 6.4072265625;
-        for (int i = 0; i < robot_->jointList.size(); i++) {
-            int a[] = {0,1,2,3,4,5,9,12,13,14,18,19,20,23,27,28,29,30,31,32,40,41};
-            if (contains(a, i)) {
-                robot_->jointList[i]->child->rbProps.mass = 0.35;
-            }
+        // robot_->root->rbProps.mass = 6.4072265625;
+        // for (int i = 0; i < robot_->jointList.size(); i++) {
+        //     int a[] = {0,1,2,3,4,5,9,12,13,14,18,19,20,23,27,28,29,30,31,32,40,41};
+        //     if (contains(a, i)) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.35;
+        //     }
 
-            int b[] = {6,7,8};
-            if (contains(b, i)) {
-                robot_->jointList[i]->child->rbProps.mass = 5.6953125;
-            }
+        //     int b[] = {6,7,8};
+        //     if (contains(b, i)) {
+        //         robot_->jointList[i]->child->rbProps.mass = 5.6953125;
+        //     }
 
-            int c[] = {24,25,26};
-            if (contains(c, i)) {
-                robot_->jointList[i]->child->rbProps.mass = 0.35595703125;
-            }
+        //     int c[] = {24,25,26};
+        //     if (contains(c, i)) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.35595703125;
+        //     }
 
-            int d[] = {36,37,38,39};
-            if (contains(d, i)) {
-                robot_->jointList[i]->child->rbProps.mass = 0.8009033203125;
-            }
+        //     int d[] = {36,37,38,39};
+        //     if (contains(d, i)) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.8009033203125;
+        //     }
 
-            int e[] = {36,37,38,39};
-            if (contains(e, i)) {
-                robot_->jointList[i]->child->rbProps.mass = 0.8009033203125;
-            }
+        //     int e[] = {36,37,38,39};
+        //     if (contains(e, i)) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.8009033203125;
+        //     }
 
-            if (i == 42 || i == 43) {
-                robot_->jointList[i]->child->rbProps.mass = 0.40045166015625;
-            }
+        //     if (i == 42 || i == 43) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.40045166015625;
+        //     }
 
-            if (i == 33 || i == 34) {
-                robot_->jointList[i]->child->rbProps.mass = 2.4027099609375;
-            }
+        //     if (i == 33 || i == 34) {
+        //         robot_->jointList[i]->child->rbProps.mass = 2.4027099609375;
+        //     }
 
-            if (i == 21 || i == 22) {
-                robot_->jointList[i]->child->rbProps.mass = 0.13348388671875;
-            }
+        //     if (i == 21 || i == 22) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.13348388671875;
+        //     }
 
-            if (i == 16 || i == 17) {
-                robot_->jointList[i]->child->rbProps.mass = 0.533935546875;
-            }
+        //     if (i == 16 || i == 17) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.533935546875;
+        //     }
 
-            if (i == 10 || i == 11) {
-                robot_->jointList[i]->child->rbProps.mass = 3.20361328125;
-            }
+        //     if (i == 10 || i == 11) {
+        //         robot_->jointList[i]->child->rbProps.mass = 3.20361328125;
+        //     }
 
-            if (i == 15) {
-                robot_->jointList[i]->child->rbProps.mass = 19.2216796875;
-            }
+        //     if (i == 15) {
+        //         robot_->jointList[i]->child->rbProps.mass = 19.2216796875;
+        //     }
 
-            if (i == 35) {
-                robot_->jointList[i]->child->rbProps.mass = 4.271484375;
-            }
-        }
+        //     if (i == 35) {
+        //         robot_->jointList[i]->child->rbProps.mass = 4.271484375;
+        //     }
+        // }
 
-        if (curr_max_episode_length < 40) {
-            robot_->root->rbProps.mass = 0.01;
-            for (uint i = 0; i < robot_->jointList.size(); i++) {
-                robot_->jointList[i]->child->rbProps.mass = 0.01;
-            }
-        } else if (curr_max_episode_length >= 40 && curr_max_episode_length < 50) {
-            robot_->root->rbProps.mass *= 0.25;
-            for (uint i = 0; i < robot_->jointList.size(); i++) {
-                robot_->jointList[i]->child->rbProps.mass *= 0.25;
-            }
-        } else if (curr_max_episode_length >= 50 && curr_max_episode_length < 60) {
-            robot_->root->rbProps.mass *= 0.5;
-            for (uint i = 0; i < robot_->jointList.size(); i++) {
-                robot_->jointList[i]->child->rbProps.mass *= 0.5;
-            }
-        } else if (curr_max_episode_length >= 60 && curr_max_episode_length < 70) {
-            robot_->root->rbProps.mass *= 0.75;
-            for (uint i = 0; i < robot_->jointList.size(); i++) {
-                robot_->jointList[i]->child->rbProps.mass *= 0.75;
-            }
-        } else if (curr_max_episode_length >= 70) {
-            robot_->root->rbProps.mass *= 1;
-            for (uint i = 0; i < robot_->jointList.size(); i++) {
-                robot_->jointList[i]->child->rbProps.mass *= 1;
-            }
-        }
+        // if (curr_max_episode_length < 40) {
+        //     robot_->root->rbProps.mass = 0.01;
+        //     for (uint i = 0; i < robot_->jointList.size(); i++) {
+        //         robot_->jointList[i]->child->rbProps.mass = 0.01;
+        //     }
+        // } else if (curr_max_episode_length >= 40 && curr_max_episode_length < 50) {
+        //     robot_->root->rbProps.mass *= 0.25;
+        //     for (uint i = 0; i < robot_->jointList.size(); i++) {
+        //         robot_->jointList[i]->child->rbProps.mass *= 0.25;
+        //     }
+        // } else if (curr_max_episode_length >= 50 && curr_max_episode_length < 60) {
+        //     robot_->root->rbProps.mass *= 0.5;
+        //     for (uint i = 0; i < robot_->jointList.size(); i++) {
+        //         robot_->jointList[i]->child->rbProps.mass *= 0.5;
+        //     }
+        // } else if (curr_max_episode_length >= 60 && curr_max_episode_length < 70) {
+        //     robot_->root->rbProps.mass *= 0.75;
+        //     for (uint i = 0; i < robot_->jointList.size(); i++) {
+        //         robot_->jointList[i]->child->rbProps.mass *= 0.75;
+        //     }
+        // } else if (curr_max_episode_length >= 70) {
+        //     robot_->root->rbProps.mass *= 1;
+        //     for (uint i = 0; i < robot_->jointList.size(); i++) {
+        //         robot_->jointList[i]->child->rbProps.mass *= 1;
+        //     }
+        // }
 
         applyControlSignal(jointTarget);
         jointActionPlot->addData((float)getTimeStamp(), jointTarget);

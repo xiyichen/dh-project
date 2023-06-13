@@ -114,14 +114,16 @@ class VanillaEnv(PylocoEnv):
         
         self._sim.reset()
         self.init_phase=np.random.uniform(0,1)
-        self.selected_motion = random.randint(0,1)
+        self.selected_motion = random.randint(0,2)
         if self.selected_motion == 0:
             self.target_motion = load_target_motion('walk', os.path.join(os.getcwd(), 'data/robots/motions/'))
-        else:
+        elif self.selected_motion == 1:
             self.target_motion = load_target_motion('run', os.path.join(os.getcwd(), 'data/robots/motions/'))
+        elif self.selected_motion == 2:
+            self.target_motion = load_target_motion('jump', os.path.join(os.getcwd(), 'data/robots/motions/'))
         observation = self.get_obs(self.init_phase, self.selected_motion)
         q_init = observation[:50]
-        qdot_init = observation[50:-3] 
+        qdot_init = observation[50:-4] 
         
         t = self.target_motion[0]['duration'][0]
         num_frames = len(self.target_motion.keys())
@@ -260,13 +262,13 @@ class VanillaEnv(PylocoEnv):
         # update variables
         self.current_step += 1
         
-        if self.current_step == 200:
-            if self.selected_motion == 0:
-                self.selected_motion = 1
-                self.target_motion = load_target_motion('run', os.path.join(os.getcwd(), 'data/robots/motions/'))
-            else:
-                self.selected_motion = 0
-                self.target_motion = load_target_motion('walk', os.path.join(os.getcwd(), 'data/robots/motions/'))
+        # if self.current_step == 200:
+        #     if self.selected_motion == 0:
+        #         self.selected_motion = 1
+        #         self.target_motion = load_target_motion('run', os.path.join(os.getcwd(), 'data/robots/motions/'))
+        #     else:
+        #         self.selected_motion = 0
+        #         self.target_motion = load_target_motion('walk', os.path.join(os.getcwd(), 'data/robots/motions/'))
         
         phase, num_loops_passed = self.get_phase()
         num_frames = len(self.target_motion.keys())
