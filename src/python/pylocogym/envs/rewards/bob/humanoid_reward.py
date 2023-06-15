@@ -173,7 +173,7 @@ def compute_reward(observation_raw, dt, num_joints, params, feet_status, all_tor
 
         vel_error=max(target_speed- v_proj,0)
 
-        vel_target_reward=math.exp(-vel_error**2)
+        vel_target_reward=math.exp(-2.5*vel_error**2)
 
     reward = 0.65*pose_reward \
              + 0.2*vel_target_reward \
