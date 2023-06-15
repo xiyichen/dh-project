@@ -53,3 +53,9 @@ Training Results - Run
 ![Figure 9 - jump](assets/jump.gif)
 
 Training Results - Jump
+
+### Training Results: Skill Selector
+
+![Figure 10 - skill_selector](assets/skill_selector.gif)
+
+Training Results - Skill Selector. Only walking could be successfully imitated.
