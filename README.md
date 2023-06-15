@@ -2,9 +2,13 @@
 
 ## Branches
 Visualizing reference motion: demo
+
 Train Single Motion with Mass curriculum: mass_curriculum
+
 Train Single Motion without Mass curriculum: single_motion
+
 Train One Policy for Multiple Motions with Skill Selector: skill_selector
+
 Train Walking with Random Velocity and Heading: velocity_goal
 
 ## Installation
